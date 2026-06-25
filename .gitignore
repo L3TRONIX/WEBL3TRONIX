@@ -6,6 +6,7 @@ node_modules/
 .env*
 .DS_Store
 public/*.mp4
+public/videos/
 public/*.bk
 public/l3tronix_test.png
 public/l3tronix_v2.png

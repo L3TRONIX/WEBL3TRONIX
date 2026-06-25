@@ -1,0 +1,216 @@
+"use client";
+
+import { useState } from "react";
+import { createClient } from "../lib/supabase/client";
+
+export default function AuthModal({ onClose }: { onClose: () => void }) {
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    const supabase = createClient();
+
+    if (mode === "signup") {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
+      if (error) {
+        setMessage({ type: "error", text: error.message });
+      } else {
+        setMessage({ type: "success", text: "Registro correcto. Revisa tu email para confirmar la cuenta." });
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setMessage({ type: "error", text: error.message });
+      } else {
+        setMessage({ type: "success", text: "Sesión iniciada." });
+        setTimeout(onClose, 800);
+      }
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.85)",
+        zIndex: 100,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#000",
+          border: "1px solid rgba(0,255,153,0.3)",
+          borderRadius: "4px",
+          padding: "32px",
+          width: "min(90vw, 380px)",
+          fontFamily: "'Courier New', monospace",
+          color: "#00ff99",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: "12px",
+            right: "12px",
+            background: "transparent",
+            border: "none",
+            color: "#00ff99",
+            fontSize: "18px",
+            cursor: "pointer",
+          }}
+        >
+          ✕
+        </button>
+
+        <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
+          <button
+            onClick={() => setMode("login")}
+            style={{
+              background: "transparent",
+              border: "none",
+              borderBottom: mode === "login" ? "2px solid #ffcc00" : "2px solid transparent",
+              color: mode === "login" ? "#ffcc00" : "rgba(0,255,153,0.4)",
+              padding: "8px 0",
+              cursor: "pointer",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "13px",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+          >
+            Iniciar sesión
+          </button>
+          <button
+            onClick={() => setMode("signup")}
+            style={{
+              background: "transparent",
+              border: "none",
+              borderBottom: mode === "signup" ? "2px solid #ffcc00" : "2px solid transparent",
+              color: mode === "signup" ? "#ffcc00" : "rgba(0,255,153,0.4)",
+              padding: "8px 0",
+              cursor: "pointer",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "13px",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+          >
+            Registrarse
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {mode === "signup" && (
+            <input
+              type="text"
+              placeholder="nombre"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              style={{
+                background: "rgba(0,255,153,0.05)",
+                border: "1px solid rgba(0,255,153,0.2)",
+                borderRadius: "2px",
+                padding: "10px 12px",
+                color: "#00ff99",
+                fontFamily: "'Courier New', monospace",
+                fontSize: "14px",
+                outline: "none",
+              }}
+            />
+          )}
+          <input
+            type="email"
+            placeholder="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{
+              background: "rgba(0,255,153,0.05)",
+              border: "1px solid rgba(0,255,153,0.2)",
+              borderRadius: "2px",
+              padding: "10px 12px",
+              color: "#00ff99",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "14px",
+              outline: "none",
+            }}
+          />
+          <input
+            type="password"
+            placeholder="contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            style={{
+              background: "rgba(0,255,153,0.05)",
+              border: "1px solid rgba(0,255,153,0.2)",
+              borderRadius: "2px",
+              padding: "10px 12px",
+              color: "#00ff99",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "14px",
+              outline: "none",
+            }}
+          />
+
+          {message && (
+            <div style={{
+              fontSize: "12px",
+              color: message.type === "error" ? "#00ffcc" : "#00ff99",
+              padding: "8px 10px",
+              border: `1px solid ${message.type === "error" ? "rgba(0,255,204,0.3)" : "rgba(0,255,153,0.3)"}`,
+              borderRadius: "2px",
+            }}>
+              {message.text}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              background: "#ffcc00",
+              border: "none",
+              borderRadius: "2px",
+              padding: "12px",
+              color: "#000",
+              fontWeight: "700",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "14px",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              cursor: loading ? "default" : "pointer",
+              opacity: loading ? 0.6 : 1,
+            }}
+          >
+            {loading ? "Procesando..." : mode === "signup" ? "Crear cuenta" : "Entrar"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

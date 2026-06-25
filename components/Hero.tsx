@@ -8,6 +8,9 @@ import BootSequence from "./BootSequence";
 import PCBBackground from "./PCBBackground";
 import GlitchOverlay from "./GlitchOverlay";
 import { useLanguage, Locale } from "../context/LanguageContext";
+import AuthModal from "./AuthModal";
+import { useUser } from "../lib/supabase/useUser";
+import { createClient } from "../lib/supabase/client";
 
 const LOCALES: Locale[] = ["en", "es"];
 const KICKSTARTER_URL = "https://www.kickstarter.com";
@@ -26,6 +29,8 @@ export default function Hero() {
   const [splashDone, setSplashDone] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const audioUnlocked = useRef(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, profileName } = useUser();
 
   useEffect(() => {
     if (!splashDone) {
@@ -164,6 +169,38 @@ export default function Hero() {
           >
             <KickstarterCountdown />
           </div>
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (user) {
+                const supabase = createClient();
+                await supabase.auth.signOut();
+              } else {
+                setShowAuthModal(true);
+              }
+            }}
+            style={{
+              position: "absolute",
+              left: cp.langLeft,
+              top: cp.langTop + 28,
+              opacity: uiOpacity,
+              background: "transparent",
+              border: "1px solid rgba(0,255,153,0.4)",
+              color: "#00ff99",
+              fontFamily: "monospace",
+              fontSize: "11px",
+              letterSpacing: "0.1em",
+              padding: "4px 10px",
+              cursor: "pointer",
+              zIndex: 20,
+              maxWidth: "160px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {user ? `${profileName || user.email} · LOGOUT` : "LOGIN"}
+          </button>
           <div style={{ position:"absolute", left:0, right:0, top:cp.ctaTop, zIndex:20, opacity:uiOpacity, textAlign:"center", pointerEvents:"none" }}>
             <MatrixText tag="p" className={styles.ctaHero} text={t.hero.cta} chaosInterval={8000} />
           </div>
@@ -232,6 +269,7 @@ export default function Hero() {
 
       {bootActive && <BootSequence onBootReady={handleBootReady} />}
       <GlitchOverlay />
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       <div className={styles.scrollHint} style={{ opacity: uiOpacity }} aria-hidden="true">
         <span className={styles.scrollLine} />
       </div>

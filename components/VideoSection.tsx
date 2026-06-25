@@ -11,9 +11,10 @@ export default function VideoSection() {
   const [isReady, setIsReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
+  const videoBase = process.env.NEXT_PUBLIC_VIDEO_BASE_URL;
   const src = locale === "es"
-    ? "/videos/presentacion_final.mp4"
-    : "/videos/presentacion_final_en.mp4";
+    ? `${videoBase}/presentacion_final.mp4`
+    : `${videoBase}/presentacion_final_en.mp4`;
 
   useEffect(() => {
     const handleProgress = (e: Event) => {
