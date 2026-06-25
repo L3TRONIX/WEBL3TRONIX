@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
+import { useUser } from "@/lib/supabase/useUser";
 import PCBBackground from "./PCBBackground";
 
 export default function VideoSection() {
   const { locale } = useLanguage();
+  const { tier } = useUser();
   const [visible, setVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -115,11 +117,12 @@ export default function VideoSection() {
         display: "flex",
         gap: "20px",
         zIndex: 10,
-        background: "rgba(0,0,0,0.7)",
+        background: "transparent",
         padding: "16px 32px",
         borderRadius: "4px",
-        border: "1px solid rgba(0,255,153,0.3)",
-        backdropFilter: "blur(8px)",
+        border: "none",
+        backdropFilter: "none",
+        animation: tier === 500 ? "btnPulse 2s ease-in-out infinite, btnGlitch 5s infinite" : undefined,
       }}>
         <button
           onClick={togglePlay}
@@ -187,9 +190,9 @@ export default function VideoSection() {
             fontSize: "14px",
             letterSpacing: "0.15em",
             padding: "8px 20px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            color: "rgba(255,255,255,0.7)",
+            background: tier === 500 ? (isPlaying ? "rgba(0,255,153,0.2)" : "rgba(255,204,0,0.2)") : "rgba(255,255,255,0.05)",
+            border: "1px solid " + (tier === 500 ? (isPlaying ? "var(--color-primary)" : "var(--color-accent)") : "rgba(255,255,255,0.2)"),
+            color: tier === 500 ? (isPlaying ? "var(--color-primary)" : "var(--color-accent)") : "rgba(255,255,255,0.7)",
             cursor: isReady ? "pointer" : "not-allowed",
             opacity: isReady ? 1 : 0.4,
             borderRadius: "2px",
@@ -198,16 +201,29 @@ export default function VideoSection() {
           }}
           onMouseEnter={(e) => {
             if (!isReady) return;
-            e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.background = tier === 500 ? (isPlaying ? "rgba(0,255,153,0.4)" : "rgba(255,204,0,0.4)") : "rgba(255,255,255,0.15)";
           }}
           onMouseLeave={(e) => {
             if (!isReady) return;
-            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+            e.currentTarget.style.background = tier === 500 ? (isPlaying ? "rgba(0,255,153,0.2)" : "rgba(255,204,0,0.2)") : "rgba(255,255,255,0.05)";
           }}
         >
           ⟲ RESET
         </button>
       </div>
+      <style>{`
+        @keyframes btnPulse {
+          0%, 100% { filter: drop-shadow(0 0 5px var(--color-accent)); }
+          50% { filter: drop-shadow(0 0 1px var(--color-accent)); }
+        }
+        @keyframes btnGlitch {
+          0%,80%,100% { transform: translateX(-50%) skewX(0deg); filter: drop-shadow(0 0 5px var(--color-accent)); }
+          82% { transform: translateX(calc(-50% - 3px)) skewX(-4deg); filter: drop-shadow(-2px 0 var(--color-accent)) drop-shadow(2px 0 var(--color-primary)); }
+          84% { transform: translateX(calc(-50% + 2px)) skewX(2deg); filter: none; }
+          86% { transform: translateX(calc(-50% - 1px)) skewX(-1deg); filter: drop-shadow(2px 0 var(--color-accent)); }
+          88% { transform: translateX(-50%) skewX(0deg); filter: drop-shadow(0 0 5px var(--color-accent)); }
+        }
+      `}</style>
     </section>
   );
 }

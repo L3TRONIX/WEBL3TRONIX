@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { useUser } from "../lib/supabase/useUser";
 import PCBBackground from "./PCBBackground";
 
 const LOGO_FRAMES = 75;
@@ -8,13 +9,14 @@ const LOGO_FPS = 60;
 const SPINNER_FPS = 30;
 
 export default function BootSequence() {
+  const { tier } = useUser();
   const eyesCanvas = useRef<HTMLCanvasElement>(null);
   const spinnerCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const imgs = Array.from({ length: LOGO_FRAMES }, (_, i) => {
       const img = new Image();
-      img.src = "/boot/eyes-" + i + ".png";
+      img.src = (tier === 500 ? "/boot-hivemag/eyes-" : "/boot/eyes-") + i + ".png";
       return img;
     });
     let frame = 0;
@@ -40,12 +42,12 @@ export default function BootSequence() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [tier]);
 
   useEffect(() => {
     const imgs = Array.from({ length: SPINNER_FRAMES }, (_, i) => {
       const img = new Image();
-      img.src = "/boot/progress-" + i + ".png";
+      img.src = (tier === 500 ? "/boot-hivemag-spinner/progress-" : "/boot/progress-") + i + ".png";
       return img;
     });
     let frame = 0;
@@ -68,22 +70,23 @@ export default function BootSequence() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [tier]);
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#000", zIndex: 9999, overflow: "hidden" }}>
       <PCBBackground />
       <img
-        src="/L3OS.png"
+        src={tier === 500 ? "/L3OS-gifneo.png" : "/L3OS.png"}
         alt="L3OS"
         style={{
           position: "absolute",
-          top: "62%",
+          top: "54%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "32%",
           zIndex: 0,
           pointerEvents: "none",
+          animation: tier === 500 ? "logoPulse 2s ease-in-out infinite, logoGlitch 5s infinite" : undefined,
         }}
       />
       <canvas
@@ -92,7 +95,7 @@ export default function BootSequence() {
         height={1080}
         style={{
           position: "absolute",
-          top: "-15%",
+          top: "-25%",
           left: "50%",
           transform: "translateX(-50%) scaleX(1.3)",
           width: "100%",
@@ -106,12 +109,25 @@ export default function BootSequence() {
         height={320}
         style={{
           position: "absolute",
-          bottom: "4%",
+          bottom: "-5%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "320px",
+          width: "34vw", minWidth: "200px", maxWidth: "640px",
         }}
       />
+      <style>{`
+        @keyframes logoPulse {
+          0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px var(--color-accent)); }
+          50% { opacity: 0.85; filter: drop-shadow(0 0 1px var(--color-accent)); }
+        }
+        @keyframes logoGlitch {
+          0%,80%,100% { transform: translate(-50%,-50%) skewX(0deg); filter: drop-shadow(0 0 10px var(--color-accent)); }
+          82% { transform: translate(calc(-50% - 3px), calc(-50% + 1px)) skewX(-4deg); filter: drop-shadow(-2px 0 var(--color-accent)) drop-shadow(2px 0 var(--color-primary)); }
+          84% { transform: translate(calc(-50% + 2px), calc(-50% - 1px)) skewX(2deg); filter: none; }
+          86% { transform: translate(calc(-50% - 1px), calc(-50% + 2px)) skewX(-1deg); filter: drop-shadow(2px 0 var(--color-accent)); }
+          88% { transform: translate(-50%,-50%) skewX(0deg); filter: drop-shadow(0 0 10px var(--color-accent)); }
+        }
+      `}</style>
     </div>
   );
 }
