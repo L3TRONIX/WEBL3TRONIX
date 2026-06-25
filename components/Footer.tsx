@@ -7,6 +7,7 @@ export default function Footer() {
   const { t } = useLanguage();
   
   // ESTADO ÚNICO (en lugar de 5 useState separados)
+  const [unlocked, setUnlocked] = useState<{tier: number, content: string} | null>(null);
   const [state, setState] = useState({
     command: "",
     output: [
@@ -70,6 +71,30 @@ export default function Footer() {
           break;
 
         default:
+          if (trimmed.startsWith("unlock ")) {
+            const code = trimmed.replace("unlock ", "").trim().toUpperCase();
+            fetch("/api/unlock", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code }),
+            })
+              .then((r) => r.json())
+              .then((data) => {
+                if (data.valid) {
+                  setUnlocked({ tier: data.tier, content: data.content });
+                  setState((prev) => ({
+                    ...prev,
+                    output: [...prev.output, `$ unlock ****`, `✓ ACCESO TIER ${data.tier}€ CONCEDIDO`, `Contenido privado desbloqueado.`, ""],
+                  }));
+                } else {
+                  setState((prev) => ({
+                    ...prev,
+                    output: [...prev.output, `$ unlock ****`, data.message || "CÓDIGO INVÁLIDO", ""],
+                  }));
+                }
+              });
+            return { ...prev, output: [...prev.output, "$ unlock ****", "Verificando código...", ""], history: [...prev.history, trimmed], historyIndex: -1, command: "" };
+          }
           response = [`COMANDO NO RECONOCIDO: '${trimmed}'`];
           break;
       }
@@ -238,8 +263,37 @@ export default function Footer() {
         </div>
 
         {/* Grid 3 columnas */}
-        <div style={{
-          display: "grid",
+        {unlocked && (
+          <div style={{
+            padding: "24px",
+            border: "1px solid rgba(0,255,153,0.3)",
+            background: "rgba(0,255,153,0.04)",
+            borderRadius: "2px",
+            marginBottom: "24px",
+            fontFamily: "'Courier New', monospace",
+          }}>
+            <div style={{ color: "#ffcc00", letterSpacing: "0.15em", marginBottom: "16px" }}>
+              ⎔ CONTENIDO PRIVADO — TIER {unlocked.tier}€
+            </div>
+            <div style={{ color: "#00ff99", whiteSpace: "pre-wrap", lineHeight: "1.7", fontSize: "clamp(12px, 1vw, 15px)" }}>
+              {unlocked.content}
+            </div>
+            <button onClick={() => setUnlocked(null)} style={{
+              marginTop: "20px",
+              background: "transparent",
+              border: "1px solid rgba(0,255,153,0.2)",
+              color: "rgba(0,255,153,0.4)",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "12px",
+              padding: "6px 14px",
+              cursor: "pointer",
+              letterSpacing: "0.1em",
+            }}>
+              CERRAR
+            </button>
+          </div>
+        )}
+        <div style={{ display: unlocked ? "none" : "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
           gap: "24px",
           marginBottom: "40px",
