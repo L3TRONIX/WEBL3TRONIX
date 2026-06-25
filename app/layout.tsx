@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PCBBackground from "../components/PCBBackground";
 import { LanguageProvider } from "../context/LanguageContext";
 import "./globals.css";
 
@@ -14,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body><LanguageProvider>{children}</LanguageProvider></body>
+      <body><PCBBackground fixed /><LanguageProvider>{children}</LanguageProvider></body>
     </html>
   );
 }

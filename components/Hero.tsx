@@ -5,8 +5,8 @@ import styles from "./Hero.module.css";
 import KickstarterCountdown from "./KickstarterCountdown";
 import MatrixText from "./MatrixText";
 import BootSequence from "./BootSequence";
-import PCBBackground from "./PCBBackground";
 import GlitchOverlay from "./GlitchOverlay";
+import PCBBackground from "./PCBBackground";
 import { useLanguage, Locale } from "../context/LanguageContext";
 import AuthModal from "./AuthModal";
 import { useUser } from "../lib/supabase/useUser";
@@ -23,7 +23,7 @@ export default function Hero() {
   const [progress, setProgress] = useState(0);
   const [crtPhase, setCrtPhase] = useState(-1);
   const [bootActive, setBootActive] = useState(false);
-  const bootDone = useRef(false);
+
   const imgRef = useRef<HTMLImageElement>(null);
   const [cp, setCp] = useState<Record<string, number> | null>(null);
   const [splashDone, setSplashDone] = useState(false);
@@ -98,11 +98,7 @@ export default function Hero() {
     return () => window.removeEventListener("resize", calcCp);
   }, []);
 
-  const handleBootReady = () => {
-    bootDone.current = true;
-    setBootActive(false);
-    window.dispatchEvent(new CustomEvent("bootready"));
-  };
+
 
   const safeProgress = progress || 0;
   
@@ -122,13 +118,12 @@ export default function Hero() {
       setCrtPhase(2);
       setTimeout(() => { setCrtPhase(-1); }, 400);
     }
-    if (cutOpacity >= 0.95) {
-      if (!bootActive && !bootDone.current) {
-        setTimeout(() => setBootActive(true), 350);
+    if (cutOpacity > 0) {
+      if (!bootActive) {
+        setBootActive(true);
       }
-    } else if (cutOpacity < 0.9) {
+    } else {
       setBootActive(false);
-      bootDone.current = false;
     }
   }, [cutOpacity, crtPhase]);
 
@@ -144,6 +139,7 @@ export default function Hero() {
           transform: `scale(${scale})`,
           transformOrigin: "50.15% 46.8%",
           willChange: "transform",
+          isolation: "isolate",
         }}
       >
         <img ref={imgRef} src="/l3tronix-glow.png" alt="L3TRONIX" className={styles.consoleSvg} />
@@ -267,7 +263,7 @@ export default function Hero() {
         ) : null}
       </div>
 
-      {bootActive && <BootSequence onBootReady={handleBootReady} />}
+      {bootActive && <BootSequence />}
       <GlitchOverlay />
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       <div className={styles.scrollHint} style={{ opacity: uiOpacity }} aria-hidden="true">

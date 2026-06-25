@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export default function PCBBackground() {
+export default function PCBBackground({ fixed = false }: { fixed?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -18,9 +18,9 @@ export default function PCBBackground() {
     canvas.height = h;
 
     const GRID = 40;
-    const COLOR_GREEN = "rgba(0,255,153,0.3)";
-    const COLOR_GOLD  = "rgba(255,204,0,0.12)";
-    const NODE_COLOR  = "rgba(0,255,153,0.3)";
+    const COLOR_GREEN = "rgba(0,255,153,0.28)";
+    const COLOR_GOLD  = "rgba(255,204,0,0.11)";
+    const NODE_COLOR  = "rgba(0,255,153,0.28)";
 
     type Line = { x1:number; y1:number; x2:number; y2:number; color:string; pulse:number; speed:number };
     type Node = { x:number; y:number; r:number; pulse:number; speed:number };
@@ -51,7 +51,7 @@ export default function PCBBackground() {
       ctx.clearRect(0, 0, w, h);
       for (const l of lines) {
         l.pulse += l.speed;
-        const alpha = 0.3 + 0.7 * Math.abs(Math.sin(l.pulse));
+        const alpha = 0.25 + 0.55 * Math.abs(Math.sin(l.pulse));
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = l.color;
         ctx.lineWidth = 1;
@@ -62,7 +62,7 @@ export default function PCBBackground() {
       }
       for (const n of nodes) {
         n.pulse += n.speed;
-        const alpha = 0.2 + 0.8 * Math.abs(Math.sin(n.pulse));
+        const alpha = 0.2 + 0.55 * Math.abs(Math.sin(n.pulse));
         ctx.globalAlpha = alpha;
         ctx.fillStyle = NODE_COLOR;
         ctx.beginPath();
@@ -86,7 +86,7 @@ export default function PCBBackground() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ position:"absolute", inset:0, zIndex:0, pointerEvents:"none" }}
+      style={{ position: fixed ? "fixed" : "absolute", inset:0, zIndex:0, pointerEvents:"none" }}
     />
   );
 }

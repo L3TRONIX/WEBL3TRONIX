@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
+import PCBBackground from "./PCBBackground";
 
 export default function VideoSection() {
   const { locale } = useLanguage();
@@ -71,7 +72,7 @@ export default function VideoSection() {
     <section style={{
       width: "100%",
       height: "100vh",
-      background: "#000",
+      background: "transparent",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -79,6 +80,18 @@ export default function VideoSection() {
       overflow: "hidden",
       position: "relative",
     }}>
+      <PCBBackground />
+      <div style={{
+        position: "relative",
+        width: "100%",
+        maxHeight: "100vh",
+        aspectRatio: "3.2 / 1",
+        background: "#000",
+        zIndex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
       <video
         ref={videoRef}
         key={src}
@@ -92,6 +105,7 @@ export default function VideoSection() {
         }}
         onEnded={() => setIsPlaying(false)}
       />
+      </div>
       
       <div style={{
         position: "absolute",

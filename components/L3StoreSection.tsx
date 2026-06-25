@@ -2,6 +2,7 @@
 
 import { useLanguage } from "../context/LanguageContext";
 import MatrixText from "./MatrixText";
+import PCBBackground from "./PCBBackground";
 
 export default function L3StoreSection() {
   const { t } = useLanguage();
@@ -17,6 +18,7 @@ export default function L3StoreSection() {
       position: "relative",
       overflow: "hidden",
     }}>
+      <PCBBackground />
       <img
         src="/L3STOR3.png"
         alt="L3STORE"

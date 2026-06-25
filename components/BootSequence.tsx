@@ -1,64 +1,79 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
+import PCBBackground from "./PCBBackground";
 
 const LOGO_FRAMES = 75;
 const SPINNER_FRAMES = 75;
-const LOGO_FPS = 30;
+const LOGO_FPS = 60;
 const SPINNER_FPS = 30;
 
-export default function BootSequence({ onBootReady }: { onBootReady?: () => void }) {
-  const [phase, setPhase] = useState(0);
-  const [logoFrame, setLogoFrame] = useState(0);
-  const [spinnerFrame, setSpinnerFrame] = useState(0);
-  const readyCalled = useRef(false);
+export default function BootSequence() {
+  const eyesCanvas = useRef<HTMLCanvasElement>(null);
+  const spinnerCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 300);
-    const t2 = setTimeout(() => setPhase(2), 2800);
-    const t3 = setTimeout(() => setPhase(3), 3800);
-    return () => {
-      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+    const imgs = Array.from({ length: LOGO_FRAMES }, (_, i) => {
+      const img = new Image();
+      img.src = "/boot/eyes-" + i + ".png";
+      return img;
+    });
+    let frame = 0;
+    let dir = 1;
+    let last = 0;
+    let raf: number;
+    const interval = 1000 / LOGO_FPS;
+    const tick = (ts: number) => {
+      raf = requestAnimationFrame(tick);
+      if (ts - last < interval) return;
+      last = ts;
+      const canvas = eyesCanvas.current;
+      if (!canvas) return;
+      const img = imgs[frame];
+      if (!img.complete) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      frame += dir;
+      if (frame >= LOGO_FRAMES - 1) { dir = -1; frame = LOGO_FRAMES - 1; }
+      if (frame <= 0) { dir = 1; frame = 0; }
     };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Animar ojos ping-pong
   useEffect(() => {
-    if (phase !== 2 && phase !== 3) return;
-    const dir = { val: 1 };
-    const interval = setInterval(() => {
-      setLogoFrame(f => {
-        const next = f + dir.val;
-        if (next >= LOGO_FRAMES - 1) {
-          dir.val = -1;
-          return LOGO_FRAMES - 1;
-        }
-        if (next <= 0) { dir.val = 1; return 0; }
-        return next;
-      });
-    }, 1000 / LOGO_FPS);
-    return () => clearInterval(interval);
-  }, [phase]);
-
-  useEffect(() => {
-    if (logoFrame === LOGO_FRAMES - 1 && !readyCalled.current) {
-      readyCalled.current = true;
-      onBootReady?.();
-    }
-  }, [logoFrame]);
-
-  // Animar spinner en loop
-  useEffect(() => {
-    if (phase < 1) return;
-    const interval = setInterval(() => {
-      setSpinnerFrame(f => (f + 1) % SPINNER_FRAMES);
-    }, 1000 / SPINNER_FPS);
-    return () => clearInterval(interval);
-  }, [phase]);
+    const imgs = Array.from({ length: SPINNER_FRAMES }, (_, i) => {
+      const img = new Image();
+      img.src = "/boot/progress-" + i + ".png";
+      return img;
+    });
+    let frame = 0;
+    let last = 0;
+    let raf: number;
+    const interval = 1000 / SPINNER_FPS;
+    const tick = (ts: number) => {
+      raf = requestAnimationFrame(tick);
+      if (ts - last < interval) return;
+      last = ts;
+      const canvas = spinnerCanvas.current;
+      if (!canvas) return;
+      const img = imgs[frame];
+      if (!img.complete) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      frame = (frame + 1) % SPINNER_FRAMES;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#000", zIndex: 9999, overflow: "hidden" }}>
-
-      {phase >= 3 && <img
+      <PCBBackground />
+      <img
         src="/L3OS.png"
         alt="L3OS"
         style={{
@@ -67,44 +82,36 @@ export default function BootSequence({ onBootReady }: { onBootReady?: () => void
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "32%",
-          opacity: 1,
           zIndex: 0,
           pointerEvents: "none",
         }}
-      />}
-
-      {(phase === 2 || phase === 3) && (
-        <img
-          src={"/boot/eyes-" + logoFrame + ".png"}
-          alt=""
-          style={{
-            position: "absolute",
-            top: "-15%",
-            left: "50%",
-            transform: "translateX(-50%) scaleX(1.3)",
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            mixBlendMode: "screen",
-            opacity: 1,
-          }}
-        />
-      )}
-
-      {phase >= 1 && (
-        <img
-          src={"/boot/progress-" + spinnerFrame + ".png"}
-          alt=""
-          style={{
-            position: "absolute",
-            bottom: "4%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "320px",
-            opacity: 1,
-          }}
-        />
-      )}
+      />
+      <canvas
+        ref={eyesCanvas}
+        width={1920}
+        height={1080}
+        style={{
+          position: "absolute",
+          top: "-15%",
+          left: "50%",
+          transform: "translateX(-50%) scaleX(1.3)",
+          width: "100%",
+          height: "100%",
+          mixBlendMode: "screen",
+        }}
+      />
+      <canvas
+        ref={spinnerCanvas}
+        width={320}
+        height={320}
+        style={{
+          position: "absolute",
+          bottom: "4%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "320px",
+        }}
+      />
     </div>
   );
 }
