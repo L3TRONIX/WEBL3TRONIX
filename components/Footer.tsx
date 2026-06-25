@@ -199,23 +199,36 @@ function Terminal({ unlocked, setUnlocked }: {
 
 // ── Componente Updates ──────────────────────────────────────────────────────
 function Updates() {
+  const [updates, setUpdates] = useState<{ title: string; published_at: string; body: string }[]>([]);
+
+  useEffect(() => {
+    const supabase = (async () => {
+      const { createClient } = await import("@/lib/supabase/client");
+      return createClient();
+    })();
+    supabase.then(client =>
+      client.from("updates").select("title, published_at, body").order("published_at", { ascending: false }).limit(5)
+    ).then(({ data }) => {
+      if (data) setUpdates(data);
+    });
+  }, []);
+
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, display: "flex", flexDirection: "column", minHeight: "clamp(240px, 25vw, 340px)" }}>
       <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "16px" }}>📡 ACTUALIZACIONES</div>
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "clamp(8px, 1vw, 12px)" }}>
-        {[
-          { title: "UI Refinement - Fase 2 iniciada", date: "2026-06-24", body: "Mejoras visuales en el Hero y componentes principales." },
-          { title: "Sistema de scroll optimizado", date: "2026-06-23", body: "Transiciones más suaves y mejor rendimiento." },
-          { title: "Efectos Matrix implementados", date: "2026-06-22", body: "Animaciones de texto estilo Matrix en toda la web." },
-        ].map((u, i) => (
+        {updates.map((u, i) => (
           <div key={i} style={{ padding: "clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 14px)", borderLeft: "2px solid rgba(0,255,153,0.2)", background: "rgba(255,255,255,0.02)", borderRadius: "2px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
               <span style={{ fontSize: "clamp(12px, 0.9vw, 15px)", color: COLOR_GREEN, fontWeight: "600" }}>{u.title}</span>
-              <span style={{ fontSize: "clamp(10px, 0.7vw, 13px)", color: COLOR_YELLOW }}>{u.date}</span>
+              <span style={{ fontSize: "clamp(10px, 0.7vw, 13px)", color: COLOR_YELLOW }}>{u.published_at}</span>
             </div>
             <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_YELLOW }}>{u.body}</div>
           </div>
         ))}
+        {updates.length === 0 && (
+          <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO }}>— SIN ACTUALIZACIONES —</div>
+        )}
       </div>
     </div>
   );
