@@ -25,12 +25,14 @@ export default function Hero() {
   const [bootActive, setBootActive] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
+  const badgeCanvas = useRef<HTMLCanvasElement>(null);
+  const badgeRaf = useRef<number>(0);
   const [cp, setCp] = useState<Record<string, number> | null>(null);
   const [splashDone, setSplashDone] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const audioUnlocked = useRef(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, profileName } = useUser();
+  const { user, profileName, tier, founderNumber } = useUser();
 
   useEffect(() => {
     if (!splashDone) {
@@ -99,6 +101,54 @@ export default function Hero() {
     return () => window.removeEventListener("resize", calcCp);
   }, []);
 
+  useEffect(() => {
+    const canvas = badgeCanvas.current;
+    if (!canvas || !tier) return;
+    cancelAnimationFrame(badgeRaf.current);
+
+    if (tier === 200) {
+      const FRAMES = 75, FPS = 30;
+      const imgs = Array.from({ length: FRAMES }, (_, i) => {
+        const img = new Image(); img.src = "/boot/progress-" + i + ".png"; return img;
+      });
+      let frame = 0, last = 0;
+      const interval = 1000 / FPS;
+      const tick = (ts: number) => {
+        badgeRaf.current = requestAnimationFrame(tick);
+        if (ts - last < interval) return;
+        last = ts;
+        const ctx = canvas.getContext("2d");
+        if (!ctx || !imgs[frame].complete) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgs[frame], 0, 0, canvas.width, canvas.height);
+        frame = (frame + 1) % FRAMES;
+      };
+      badgeRaf.current = requestAnimationFrame(tick);
+    } else if (tier === 500) {
+      const FRAMES = 75, FPS = 60;
+      const imgs = Array.from({ length: FRAMES }, (_, i) => {
+        const img = new Image(); img.src = "/boot/eyes-" + i + ".png"; return img;
+      });
+      let frame = 0, dir = 1, last = 0;
+      const interval = 1000 / FPS;
+      const tick = (ts: number) => {
+        badgeRaf.current = requestAnimationFrame(tick);
+        if (ts - last < interval) return;
+        last = ts;
+        const ctx = canvas.getContext("2d");
+        if (!ctx || !imgs[frame].complete) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgs[frame], 0, 0, canvas.width, canvas.height);
+        frame += dir;
+        if (frame >= FRAMES - 1) { dir = -1; frame = FRAMES - 1; }
+        if (frame <= 0) { dir = 1; frame = 0; }
+      };
+      badgeRaf.current = requestAnimationFrame(tick);
+    }
+
+    return () => cancelAnimationFrame(badgeRaf.current);
+  }, [tier]);
+
 
 
   const safeProgress = progress || 0;
@@ -147,59 +197,89 @@ export default function Hero() {
         <img ref={imgRef} src="/l3tronix-glow.png" alt="L3TRONIX" className={styles.consoleSvg} />
 
         {cp && <>
-          <div
-            className={styles.langToggle}
-            style={{ left: cp.langLeft, top: cp.langTop, opacity: uiOpacity }}
-          >
-            {LOCALES.map((l, i) => (
-              <span key={l}>
-                <button
-                  className={l === locale ? styles.langActive : styles.langBtn}
-                  onClick={(e) => { e.stopPropagation(); setLocale(l); }}
-                >{l.toUpperCase()}</button>
-                {i < LOCALES.length - 1 && <span className={styles.langSep}>·</span>}
-              </span>
-            ))}
-          </div>
-          <div
-            className={styles.countdown}
-            style={{ right: cp.countRight, top: cp.countTop, opacity: uiOpacity }}
-          >
-            <KickstarterCountdown />
-          </div>
-          <button
-            onClick={async (e) => {
-              e.stopPropagation();
-              if (user) {
-                const supabase = createClient();
-                await supabase.auth.signOut();
-              } else {
-                setShowAuthModal(true);
-              }
-            }}
-            style={{
-              position: "absolute",
-              left: cp.langLeft,
-              top: cp.langTop + Math.max(cp.ih * 0.06, 22),
-              opacity: uiOpacity,
-              background: "transparent",
-              border: "1px solid rgba(0,255,153,0.4)",
-              color: "#00ff99",
-              fontFamily: "monospace",
-              fontSize: Math.min(Math.max(cp.ih * 0.04, 9), 13),
-              letterSpacing: "0.1em",
-              padding: `${Math.min(Math.max(cp.ih * 0.014, 3), 6)}px ${Math.min(Math.max(cp.ih * 0.035, 8), 14)}px`,
-              cursor: "pointer",
-              zIndex: 20,
-              maxWidth: "160px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {user ? `${profileName || user.email} · LOGOUT` : "LOGIN"}
-          </button>
-          <div style={{ position:"absolute", left:0, right:0, top:cp.ctaTop, zIndex:20, opacity:uiOpacity, textAlign:"center", pointerEvents:"none" }}>
+          {/* Franja superior pantalla: insignia + nombre + número */}
+          {user && (
+            <>
+              {/* Insignia centrada */}
+              <div style={{
+                position: "absolute",
+                left: cp.scrLeft + cp.scrWidth * 0.5,
+                top: cp.scrTop - cp.scrHeight * 0.08,
+                width: cp.scrHeight * 0.72,
+                height: cp.scrHeight * 0.72,
+                transform: "translateX(-50%)",
+                zIndex: 20,
+                opacity: uiOpacity,
+                pointerEvents: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                {tier === 80 && (
+                  <img src="/L3.png" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                )}
+                {(tier === 200 || tier === 500) && (
+                  <canvas
+                    ref={badgeCanvas}
+                    width={tier === 500 ? 1264 : 359}
+                    height={tier === 500 ? 842 : 269}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                )}
+              </div>
+
+              {/* Nombre izquierda */}
+              <div style={{
+                position: "absolute",
+                left: cp.scrLeft + cp.scrWidth * 0.04,
+                top: cp.scrTop + cp.scrHeight * 0.08,
+                zIndex: 20,
+                opacity: uiOpacity,
+                pointerEvents: "none",
+                textAlign: "left",
+                fontFamily: "monospace",
+                fontSize: `clamp(10px, ${cp.scrHeight * 0.045}px, 22px)`,
+                color: "#ffcc00",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+              }}>
+                {profileName || user.email}
+              </div>
+
+              {/* Número de fundador derecha */}
+              {founderNumber && (
+                <div style={{
+                  position: "absolute",
+                  left: cp.scrLeft + cp.scrWidth * 0.96,
+                  top: cp.scrTop + cp.scrHeight * 0.08,
+                  width: cp.scrWidth * 0.22,
+                  zIndex: 20,
+                  opacity: uiOpacity,
+                  pointerEvents: "none",
+                  textAlign: "right",
+                  transform: "translateX(-100%)",
+                  fontFamily: "monospace",
+                  fontSize: `clamp(10px, ${cp.scrHeight * 0.052}px, 24px)`,
+                  color: "#00ffcc",
+                  letterSpacing: "0.1em",
+                }}>
+                  #{String(founderNumber).padStart(4, "0")}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* CTA — sube al centro si no hay usuario con tier */}
+          <div style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: (user && tier) ? cp.ctaTop : cp.scrTop + cp.scrHeight * 0.38,
+            zIndex: 20,
+            opacity: uiOpacity,
+            textAlign: "center",
+            pointerEvents: "none",
+          }}>
             <MatrixText tag="p" className={styles.ctaHero} text={t.hero.cta} chaosInterval={8000} />
           </div>
         </>}
@@ -267,6 +347,63 @@ export default function Hero() {
 
       {bootActive && <BootSequence />}
       <GlitchOverlay />
+      <div style={{
+          position: "fixed",
+          top: "clamp(10px, 2vh, 20px)",
+          right: "clamp(10px, 2vw, 24px)",
+          zIndex: 100,
+        }}>
+        <KickstarterCountdown />
+      </div>
+      <div style={{
+          position: "fixed",
+          top: "clamp(10px, 2vh, 20px)",
+          left: "clamp(10px, 2vw, 24px)",
+          zIndex: 100,
+          display: "flex",
+          alignItems: "center",
+          gap: "clamp(6px, 1vw, 14px)",
+        }}>
+        <button
+          style={{
+            background: "transparent",
+            border: "1px solid rgba(0,255,153,0.4)",
+            color: "#00ff99",
+            fontFamily: "monospace",
+            fontSize: "clamp(10px, 1.2vw, 13px)",
+            letterSpacing: "0.1em",
+            padding: "clamp(3px, 0.5vh, 6px) clamp(8px, 1vw, 14px)",
+            cursor: "pointer",
+            maxWidth: "200px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (user) {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+            } else {
+              setShowAuthModal(true);
+            }
+          }}
+        >
+          {user ? `${profileName || user.email} · LOGOUT` : "LOGIN"}
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          {LOCALES.map((l, i) => (
+            <span key={l} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <button
+                className={l === locale ? styles.langActive : styles.langBtn}
+                onClick={(e) => { e.stopPropagation(); setLocale(l); }}
+              >{l.toUpperCase()}</button>
+              {i < LOCALES.length - 1 && <span className={styles.langSep}>·</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       <div className={styles.scrollHint} style={{ opacity: uiOpacity }} aria-hidden="true">
         <span className={styles.scrollLine} />
