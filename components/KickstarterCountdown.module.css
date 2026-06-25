@@ -9,7 +9,7 @@
   font-size: clamp(9px, 1vw, 14px);
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #ffcc00;
+  color: var(--color-accent);
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -27,7 +27,7 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: clamp(14px, 1.6vw, 26px);
   font-weight: 700;
-  color: #00ff99;
+  color: var(--color-primary);
   letter-spacing: 0.02em;
   min-width: clamp(16px, 1.8vw, 30px);
   text-align: center;
@@ -36,14 +36,14 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: clamp(8px, 0.9vw, 13px);
   font-weight: 700;
-  color: rgba(0,255,153,0.5);
+  color: var(--color-primary-dim);
   letter-spacing: 0.05em;
 }
 .sep {
   font-family: 'Rajdhani', sans-serif;
   font-size: clamp(10px, 1.2vw, 18px);
   font-weight: 700;
-  color: rgba(255,204,0,0.3);
+  color: var(--color-accent-dim);
   margin: 0;
 }
 

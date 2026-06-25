@@ -29,6 +29,41 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   --off-white: #e8e8e8;
   --dim: rgba(255,255,255,0.45);
   --dimmer: rgba(255,255,255,0.15);
+
+  --color-primary: #00ff99;
+  --color-primary-dim: rgba(0,255,153,0.3);
+  --color-primary-dimmer: rgba(0,255,153,0.15);
+  --color-primary-dimmest: rgba(0,255,153,0.04);
+  --color-footer-bg: rgba(0,255,153,0.04);
+  --color-accent: #ffcc00;
+  --color-accent-dim: rgba(255,204,0,0.3);
+  --color-accent-dimmer: rgba(255,204,0,0.15);
+  --color-footer-glow: rgba(0,255,153,0.3);
+  --color-footer-glow-dimmer: rgba(0,255,153,0.15);
+  --color-footer-glow-dimmest: rgba(0,255,153,0.04);
+  --color-footer-primary: #00ff99;
+  --color-footer-primary-dim: rgba(0,255,153,0.3);
+  --color-footer-primary-dimmer: rgba(0,255,153,0.15);
+  --color-footer-primary-dimmest: rgba(0,255,153,0.04);
+}
+
+body.tier-hive-neo {
+  --color-primary: #00ffee;
+  --color-primary-dim: rgba(0,255,238,0.3);
+  --color-primary-dimmer: rgba(0,255,238,0.15);
+  --color-primary-dimmest: rgba(0,255,238,0.04);
+  --color-footer-bg: rgba(255,0,102,0.04);
+  --color-accent: #ff0066;
+  --color-accent-dim: rgba(255,0,102,0.3);
+  --color-accent-dimmer: rgba(255,0,102,0.15);
+  --color-accent-dimmest: rgba(255,0,102,0.04);
+  --color-footer-glow: rgba(255,0,102,0.3);
+  --color-footer-glow-dimmer: rgba(255,0,102,0.15);
+  --color-footer-glow-dimmest: rgba(255,0,102,0.04);
+  --color-footer-primary: #ff0066;
+  --color-footer-primary-dim: rgba(255,0,102,0.3);
+  --color-footer-primary-dimmer: rgba(255,0,102,0.15);
+  --color-footer-primary-dimmest: rgba(255,0,102,0.04);
 }
 
 @font-face {
@@ -65,7 +100,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
-  color: #ffcc00;
+  color: var(--color-accent);
   font-size: clamp(14px, 4vw, 24px);
   letter-spacing: 0.1em;
   text-transform: uppercase;

@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useUser } from "@/lib/supabase/useUser";
 
 export default function PCBBackground({ fixed = false }: { fixed?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { tier } = useUser();
+  const isGifneo = tier === 500;
+  const PCB_COLOR = isGifneo ? "rgba(255,0,255,0.28)" : "rgba(0,255,153,0.28)";
+  const PCB_GOLD  = isGifneo ? "rgba(255,0,255,0.11)" : "rgba(255,204,0,0.11)";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,9 +23,9 @@ export default function PCBBackground({ fixed = false }: { fixed?: boolean }) {
     canvas.height = h;
 
     const GRID = 40;
-    const COLOR_GREEN = "rgba(0,255,153,0.28)";
-    const COLOR_GOLD  = "rgba(255,204,0,0.11)";
-    const NODE_COLOR  = "rgba(0,255,153,0.28)";
+    const COLOR_GREEN = PCB_COLOR;
+    const COLOR_GOLD  = PCB_GOLD;
+    const NODE_COLOR  = PCB_COLOR;
 
     type Line = { x1:number; y1:number; x2:number; y2:number; color:string; pulse:number; speed:number };
     type Node = { x:number; y:number; r:number; pulse:number; speed:number };
@@ -81,7 +86,7 @@ export default function PCBBackground({ fixed = false }: { fixed?: boolean }) {
     };
     window.addEventListener("resize", onResize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", onResize); };
-  }, []);
+  }, [tier]);
 
   return (
     <canvas

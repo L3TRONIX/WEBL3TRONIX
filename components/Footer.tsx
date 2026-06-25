@@ -17,10 +17,10 @@ function useIsMobile() {
 }
 
 // ── Estilos base reutilizables ──────────────────────────────────────────────
-const BORDER = "1px solid rgba(0,255,153,0.1)";
-const BG_PANEL = "rgba(0,255,153,0.02)";
-const COLOR_GREEN = "#00ff99";
-const COLOR_YELLOW = "#ffcc00";
+const BORDER = "1px solid color-mix(in srgb, var(--color-primary) 10%, transparent)";
+const BG_PANEL = "color-mix(in srgb, var(--color-primary) 2%, transparent)";
+const COLOR_GREEN = "var(--color-primary)";
+const COLOR_YELLOW = "var(--color-accent)";
 const FONT_MONO = "'Courier New', monospace";
 
 // ── Componente TopBar ───────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ function TopBar({ activeTab, setActiveTab }: { activeTab: "signal" | "founders";
           height: "clamp(6px, 0.8vw, 10px)",
           background: COLOR_GREEN,
           borderRadius: "50%",
-          boxShadow: "0 0 20px rgba(0,255,153,0.5)",
+          boxShadow: "0 0 20px var(--color-primary-dim)",
           animation: "pulse 1.5s ease-in-out infinite",
         }} />
         <span style={{
@@ -237,13 +237,13 @@ function Updates() {
         {selected === null ? (
           <>
             {updates.map((u, i) => (
-              <div key={i} onClick={() => setSelected(i)} style={{ padding: "clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 14px)", borderLeft: "2px solid rgba(0,255,153,0.4)", background: "rgba(255,255,255,0.02)", borderRadius: "2px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div key={i} onClick={() => setSelected(i)} style={{ padding: "clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 14px)", borderLeft: "2px solid var(--color-primary-dim)", background: "rgba(255,255,255,0.02)", borderRadius: "2px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: "clamp(13px, 1.0vw, 16px)", color: COLOR_GREEN, fontWeight: "600" }}>{locale === "en" && u.title_en ? u.title_en : u.title}</span>
                 <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_YELLOW, whiteSpace: "nowrap", marginLeft: "8px" }}>{u.published_at}</span>
               </div>
             ))}
             {updates.length === 0 && (
-              <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO }}>{t.footer.updates.empty}</div>
+              <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "var(--color-primary-dimmer)", fontFamily: FONT_MONO }}>{t.footer.updates.empty}</div>
             )}
           </>
         ) : (
@@ -298,8 +298,8 @@ function FoundersPanel() {
       justifyContent: "center",
       gap: "16px",
     }}>
-      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em" }}>⎔ {t.footer.founders.title}</span>
-      <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>{t.footer.founders.empty}</span>
+      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "var(--color-primary-dim)", letterSpacing: "0.15em" }}>⎔ {t.footer.founders.title}</span>
+      <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "var(--color-primary-dimmer)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>{t.footer.founders.empty}</span>
     </div>
   );
 }
@@ -325,7 +325,7 @@ function BottomBar({ inputCommand, setInputCommand, handleBottomKeyDown, profile
             style={{ width: "100%", background: "transparent", border: "none", outline: "none", color: COLOR_GREEN, fontSize: "clamp(13px, 1.0vw, 17px)", fontFamily: FONT_MONO }}
           />
           {inputCommand === "" && (
-            <span style={{ position: "absolute", left: 0, pointerEvents: "none", color: "#ffcc00", fontSize: "clamp(13px, 1.0vw, 17px)", fontFamily: FONT_MONO, animation: "glitchPlaceholder 4s infinite" }}>{t.footer.terminal.placeholder}</span>
+            <span style={{ position: "absolute", left: 0, pointerEvents: "none", color: "var(--color-accent)", fontSize: "clamp(13px, 1.0vw, 17px)", fontFamily: FONT_MONO, animation: "glitchPlaceholder 4s infinite" }}>{t.footer.terminal.placeholder}</span>
           )}
         </div>
       </div>
@@ -425,7 +425,10 @@ function Copyright() {
 export default function Footer() {
   const { t } = useLanguage();
   const [unlocked, setUnlocked] = useState<{ tier: number; content: string } | null>(null);
-  const { profileName } = useUser();
+  const { profileName, tier } = useUser();
+  const isGifneo = tier === 500;
+  const FT_PRIMARY = isGifneo ? "255,0,255" : "0,255,153";
+  const FT_GOLD = isGifneo ? "255,0,255" : "255,204,0";
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<"signal" | "founders">("signal");
   const [inputCommand, setInputCommand] = useState("");
@@ -465,14 +468,14 @@ export default function Footer() {
       width: "100%",
       minHeight: "100vh",
       background: "#0a0a0a",
-      borderTop: "2px solid rgba(0,255,153,0.15)",
+      borderTop: "2px solid var(--color-primary-dimmer)",
       position: "relative",
       overflow: "hidden",
     }}>
       {/* Fondos */}
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 20% 50%, rgba(0,255,153,0.03) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(255,204,0,0.02) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,153,0.008) 2px, rgba(0,255,153,0.008) 4px)", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,255,153,0.03) 1px, transparent 1px), linear-gradient(0deg, rgba(0,255,153,0.03) 1px, transparent 1px)", backgroundSize: "clamp(30px, 5vw, 60px) clamp(30px, 5vw, 60px)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 20% 50%, var(--color-footer-bg) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(255,204,0,0.02) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(0deg, transparent, transparent 2px, var(--color-footer-bg) 2px, var(--color-footer-bg) 4px)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, var(--color-footer-bg) 1px, transparent 1px), linear-gradient(0deg, var(--color-footer-bg) 1px, transparent 1px)", backgroundSize: "clamp(30px, 5vw, 60px) clamp(30px, 5vw, 60px)", pointerEvents: "none", zIndex: 0 }} />
 
       {/* Contenido */}
       <div style={{
@@ -491,10 +494,10 @@ export default function Footer() {
         <TopBar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {unlocked ? (
-          <div style={{ padding: "clamp(14px, 1.5vw, 24px)", border: "1px solid rgba(0,255,153,0.3)", background: "rgba(0,255,153,0.04)", borderRadius: "2px" }}>
+          <div style={{ padding: "clamp(14px, 1.5vw, 24px)", border: "1px solid var(--color-primary-dim)", background: "var(--color-footer-bg)", borderRadius: "2px" }}>
             <div style={{ color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px", fontSize: "clamp(12px, 0.9vw, 15px)" }}>⎔ {t.footer.unlocked.title.replace("{tier}", String(unlocked.tier))}</div>
             <div style={{ color: COLOR_GREEN, whiteSpace: "pre-wrap", lineHeight: "1.7", fontSize: "clamp(13px, 1.0vw, 16px)" }}>{unlocked.content}</div>
-            <button onClick={() => setUnlocked(null)} style={{ marginTop: "20px", background: "transparent", border: "1px solid rgba(0,255,153,0.2)", color: "rgba(0,255,153,0.4)", fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", padding: "6px 14px", cursor: "pointer", letterSpacing: "0.1em" }}>{t.footer.unlocked.close}</button>
+            <button onClick={() => setUnlocked(null)} style={{ marginTop: "20px", background: "transparent", border: "1px solid var(--color-primary-dimmer)", color: "var(--color-primary-dim)", fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", padding: "6px 14px", cursor: "pointer", letterSpacing: "0.1em" }}>{t.footer.unlocked.close}</button>
           </div>
         ) : activeTab === "founders" ? (
           <FoundersPanel />
@@ -515,43 +518,43 @@ export default function Footer() {
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes glitchPlaceholder {
           0%,75%,100% { transform: translate(0,0) skewX(0deg); opacity:1; filter: none; }
-          77% { transform: translate(-3px,1px) skewX(-5deg); opacity:0.8; filter: drop-shadow(-2px 0 #ffcc00) drop-shadow(2px 0 #00ffcc); }
+          77% { transform: translate(-3px,1px) skewX(-5deg); opacity:0.8; filter: drop-shadow(-2px 0 var(--color-accent)) drop-shadow(2px 0 #00ffcc); }
           79% { transform: translate(2px,-1px) skewX(3deg); opacity:1; filter: none; }
-          81% { transform: translate(-1px,2px) skewX(-2deg); opacity:0.7; filter: drop-shadow(2px 0 #ffcc00); }
+          81% { transform: translate(-1px,2px) skewX(-2deg); opacity:0.7; filter: drop-shadow(2px 0 var(--color-accent)); }
           83% { transform: translate(0,0) skewX(0deg); opacity:1; filter: none; }
         }
         @keyframes glitch1 {
           0%,80%,100% { transform: translate(0,0) skewX(0deg); opacity:0.6; filter: none; }
-          82% { transform: translate(-3px,1px) skewX(-4deg); opacity:1; color:#ffcc00; filter: drop-shadow(-2px 0 #ffcc00) drop-shadow(2px 0 #00ffcc); }
-          84% { transform: translate(2px,-1px) skewX(2deg); opacity:0.8; color:#ffcc00; filter: none; }
-          86% { transform: translate(-1px,2px) skewX(-1deg); opacity:1; filter: drop-shadow(2px 0 #ffcc00); }
+          82% { transform: translate(-3px,1px) skewX(-4deg); opacity:1; color:var(--color-accent); filter: drop-shadow(-2px 0 var(--color-accent)) drop-shadow(2px 0 #00ffcc); }
+          84% { transform: translate(2px,-1px) skewX(2deg); opacity:0.8; color:var(--color-accent); filter: none; }
+          86% { transform: translate(-1px,2px) skewX(-1deg); opacity:1; filter: drop-shadow(2px 0 var(--color-accent)); }
           88% { transform: translate(0,0); opacity:0.6; filter: none; }
         }
         @keyframes glitch2 {
           0%,60%,100% { transform: translate(0,0) skewX(0deg); opacity:0.6; filter: none; }
-          63% { transform: translate(3px,-2px) skewX(5deg); opacity:1; color:#ffcc00; filter: drop-shadow(3px 0 #00ff99) drop-shadow(-2px 0 #ffcc00); }
-          65% { transform: translate(-2px,1px) skewX(-3deg); opacity:0.7; color:#ffcc00; filter: none; }
+          63% { transform: translate(3px,-2px) skewX(5deg); opacity:1; color:var(--color-accent); filter: drop-shadow(3px 0 var(--color-primary)) drop-shadow(-2px 0 var(--color-accent)); }
+          65% { transform: translate(-2px,1px) skewX(-3deg); opacity:0.7; color:var(--color-accent); filter: none; }
           67% { transform: translate(1px,1px); opacity:1; filter: drop-shadow(-2px 0 #00ffcc); }
           69% { transform: translate(0,0); opacity:0.6; filter: none; }
         }
         @keyframes glitch3 {
           0%,45%,100% { transform: translate(0,0) skewX(0deg); opacity:0.6; filter: none; }
-          47% { transform: translate(-4px,2px) skewX(-6deg); opacity:1; color:#ffcc00; filter: drop-shadow(3px 0 #ffcc00) drop-shadow(-3px 0 #00ff99); }
-          49% { transform: translate(2px,-2px) skewX(3deg); opacity:0.8; color:#ffcc00; filter: none; }
-          51% { transform: translate(-1px,1px); opacity:1; filter: drop-shadow(-2px 0 #ffcc00); }
+          47% { transform: translate(-4px,2px) skewX(-6deg); opacity:1; color:var(--color-accent); filter: drop-shadow(3px 0 var(--color-accent)) drop-shadow(-3px 0 var(--color-primary)); }
+          49% { transform: translate(2px,-2px) skewX(3deg); opacity:0.8; color:var(--color-accent); filter: none; }
+          51% { transform: translate(-1px,1px); opacity:1; filter: drop-shadow(-2px 0 var(--color-accent)); }
           53% { transform: translate(0,0); opacity:0.6; filter: none; }
         }
         @keyframes glitch4 {
           0%,70%,100% { transform: translate(0,0) skewX(0deg); opacity:0.6; filter: none; }
-          72% { transform: translate(2px,3px) skewX(4deg); opacity:1; color:#ffcc00; filter: drop-shadow(-3px 0 #00ffcc) drop-shadow(2px 0 #ffcc00); }
-          74% { transform: translate(-3px,-1px) skewX(-2deg); opacity:0.7; color:#ffcc00; filter: none; }
-          76% { transform: translate(1px,0px); opacity:1; filter: drop-shadow(2px 0 #00ff99); }
+          72% { transform: translate(2px,3px) skewX(4deg); opacity:1; color:var(--color-accent); filter: drop-shadow(-3px 0 #00ffcc) drop-shadow(2px 0 var(--color-accent)); }
+          74% { transform: translate(-3px,-1px) skewX(-2deg); opacity:0.7; color:var(--color-accent); filter: none; }
+          76% { transform: translate(1px,0px); opacity:1; filter: drop-shadow(2px 0 var(--color-primary)); }
           78% { transform: translate(0,0); opacity:0.6; filter: none; }
         }
         @keyframes glitch5 {
           0%,55%,100% { transform: translate(0,0) skewX(0deg); opacity:0.6; filter: none; }
-          57% { transform: translate(-2px,-3px) skewX(-5deg); opacity:1; color:#ffcc00; filter: drop-shadow(2px 0 #ffcc00) drop-shadow(-2px 0 #00ff99); }
-          59% { transform: translate(3px,1px) skewX(3deg); opacity:0.8; color:#ffcc00; filter: none; }
+          57% { transform: translate(-2px,-3px) skewX(-5deg); opacity:1; color:var(--color-accent); filter: drop-shadow(2px 0 var(--color-accent)) drop-shadow(-2px 0 var(--color-primary)); }
+          59% { transform: translate(3px,1px) skewX(3deg); opacity:0.8; color:var(--color-accent); filter: none; }
           61% { transform: translate(-1px,-1px); opacity:1; filter: drop-shadow(-3px 0 #00ffcc); }
           63% { transform: translate(0,0); opacity:0.6; filter: none; }
         }

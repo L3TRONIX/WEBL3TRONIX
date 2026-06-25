@@ -60,12 +60,12 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "#000",
-          border: "1px solid rgba(0,255,153,0.3)",
+          border: "1px solid var(--color-primary-dim)",
           borderRadius: "4px",
           padding: "32px",
           width: "min(90vw, 380px)",
           fontFamily: "'Courier New', monospace",
-          color: "#00ff99",
+          color: "var(--color-primary)",
           position: "relative",
         }}
       >
@@ -77,7 +77,7 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             right: "12px",
             background: "transparent",
             border: "none",
-            color: "#00ff99",
+            color: "var(--color-primary)",
             fontSize: "18px",
             cursor: "pointer",
           }}
@@ -91,8 +91,8 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             style={{
               background: "transparent",
               border: "none",
-              borderBottom: mode === "login" ? "2px solid #ffcc00" : "2px solid transparent",
-              color: mode === "login" ? "#ffcc00" : "rgba(0,255,153,0.4)",
+              borderBottom: mode === "login" ? "2px solid var(--color-accent)" : "2px solid transparent",
+              color: mode === "login" ? "var(--color-accent)" : "color-mix(in srgb, var(--color-primary) 40%, transparent)",
               padding: "8px 0",
               cursor: "pointer",
               fontFamily: "'Courier New', monospace",
@@ -108,8 +108,8 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             style={{
               background: "transparent",
               border: "none",
-              borderBottom: mode === "signup" ? "2px solid #ffcc00" : "2px solid transparent",
-              color: mode === "signup" ? "#ffcc00" : "rgba(0,255,153,0.4)",
+              borderBottom: mode === "signup" ? "2px solid var(--color-accent)" : "2px solid transparent",
+              color: mode === "signup" ? "var(--color-accent)" : "color-mix(in srgb, var(--color-primary) 40%, transparent)",
               padding: "8px 0",
               cursor: "pointer",
               fontFamily: "'Courier New', monospace",
@@ -131,11 +131,11 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setName(e.target.value)}
               required
               style={{
-                background: "rgba(0,255,153,0.05)",
-                border: "1px solid rgba(0,255,153,0.2)",
+                background: "color-mix(in srgb, var(--color-primary) 5%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)",
                 borderRadius: "2px",
                 padding: "10px 12px",
-                color: "#00ff99",
+                color: "var(--color-primary)",
                 fontFamily: "'Courier New', monospace",
                 fontSize: "14px",
                 outline: "none",
@@ -148,11 +148,11 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             value={backerId}
             onChange={(e) => setBackerId(e.target.value)}
             style={{
-              background: "rgba(0,255,153,0.05)",
-              border: "1px solid rgba(0,255,153,0.1)",
+              background: "color-mix(in srgb, var(--color-primary) 5%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--color-primary) 10%, transparent)",
               borderRadius: "2px",
               padding: "10px 12px",
-              color: "rgba(0,255,153,0.7)",
+              color: "color-mix(in srgb, var(--color-primary) 70%, transparent)",
               fontFamily: "'Courier New', monospace",
               fontSize: "13px",
               outline: "none",
@@ -165,11 +165,11 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             onChange={(e) => setEmail(e.target.value)}
             required
             style={{
-              background: "rgba(0,255,153,0.05)",
-              border: "1px solid rgba(0,255,153,0.2)",
+              background: "color-mix(in srgb, var(--color-primary) 5%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)",
               borderRadius: "2px",
               padding: "10px 12px",
-              color: "#00ff99",
+              color: "var(--color-primary)",
               fontFamily: "'Courier New', monospace",
               fontSize: "14px",
               outline: "none",
@@ -183,11 +183,11 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             required
             minLength={6}
             style={{
-              background: "rgba(0,255,153,0.05)",
-              border: "1px solid rgba(0,255,153,0.2)",
+              background: "color-mix(in srgb, var(--color-primary) 5%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)",
               borderRadius: "2px",
               padding: "10px 12px",
-              color: "#00ff99",
+              color: "var(--color-primary)",
               fontFamily: "'Courier New', monospace",
               fontSize: "14px",
               outline: "none",
@@ -197,9 +197,9 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
           {message && (
             <div style={{
               fontSize: "12px",
-              color: message.type === "error" ? "#00ffcc" : "#00ff99",
+              color: message.type === "error" ? "#00ffcc" : "var(--color-primary)",
               padding: "8px 10px",
-              border: `1px solid ${message.type === "error" ? "rgba(0,255,204,0.3)" : "rgba(0,255,153,0.3)"}`,
+              border: `1px solid ${message.type === "error" ? "rgba(0,255,204,0.3)" : "var(--color-primary-dim)"}`,
               borderRadius: "2px",
             }}>
               {message.text}
@@ -210,7 +210,7 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
             type="submit"
             disabled={loading}
             style={{
-              background: "#ffcc00",
+              background: "var(--color-accent)",
               border: "none",
               borderRadius: "2px",
               padding: "12px",

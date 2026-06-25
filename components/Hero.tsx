@@ -194,7 +194,7 @@ export default function Hero() {
           ["--ch" as any]: cp ? `${cp.ih}px` : "300px",
         } as React.CSSProperties}
       >
-        <img ref={imgRef} src="/l3tronix-glow.png" alt="L3TRONIX" className={styles.consoleSvg} />
+        <img ref={imgRef} src={tier === 500 ? "/1.png" : "/l3tronix-glow.png"} alt="L3TRONIX" className={styles.consoleSvg} />
 
         {cp && <>
           {/* Franja superior pantalla: insignia + nombre + número */}
@@ -239,7 +239,7 @@ export default function Hero() {
                 textAlign: "left",
                 fontFamily: "monospace",
                 fontSize: `clamp(10px, ${cp.scrHeight * 0.045}px, 22px)`,
-                color: "#ffcc00",
+                color: "var(--color-accent)",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
               }}>
@@ -328,7 +328,7 @@ export default function Hero() {
             <div style={{
               position: "absolute",
               inset: 0,
-              background: "radial-gradient(ellipse 80% 15% at 50% 50%, #00ff99 0%, rgba(0,255,153,0.25) 50%, transparent 100%)",
+              background: "radial-gradient(ellipse 80% 15% at 50% 50%, var(--color-primary) 0%, var(--color-primary-dimmer) 50%, transparent 100%)",
               animation: crtPhase === 1 ? "crtFlash 0.35s ease-out forwards" : "crtFlashOut 0.35s ease-in forwards",
             }} />
           )}
@@ -368,7 +368,7 @@ export default function Hero() {
           style={{
             background: "transparent",
             border: "1px solid rgba(0,255,153,0.4)",
-            color: "#00ff99",
+            color: "var(--color-primary)",
             fontFamily: "monospace",
             fontSize: "clamp(10px, 1.2vw, 13px)",
             letterSpacing: "0.1em",

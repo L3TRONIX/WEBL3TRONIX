@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PCBBackground from "../components/PCBBackground";
+import TierBodyClass from "../components/TierBodyClass";
 import { LanguageProvider } from "../context/LanguageContext";
 import "./globals.css";
 
@@ -15,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body><PCBBackground fixed /><LanguageProvider>{children}</LanguageProvider></body>
+      <body><TierBodyClass /><PCBBackground fixed /><LanguageProvider>{children}</LanguageProvider></body>
     </html>
   );
 }
