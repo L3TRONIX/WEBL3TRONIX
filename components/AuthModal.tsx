@@ -9,6 +9,7 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [backerId, setBackerId] = useState("");
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +23,7 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: { data: { name, kickstarter_backer_id: backerId || null } },
       });
       if (error) {
         setMessage({ type: "error", text: error.message });
@@ -141,6 +142,22 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
               }}
             />
           )}
+          <input
+            type="text"
+            placeholder="Kickstarter Backer ID (opcional — solo si has donado)"
+            value={backerId}
+            onChange={(e) => setBackerId(e.target.value)}
+            style={{
+              background: "rgba(0,255,153,0.05)",
+              border: "1px solid rgba(0,255,153,0.1)",
+              borderRadius: "2px",
+              padding: "10px 12px",
+              color: "rgba(0,255,153,0.7)",
+              fontFamily: "'Courier New', monospace",
+              fontSize: "13px",
+              outline: "none",
+            }}
+          />
           <input
             type="email"
             placeholder="email"
