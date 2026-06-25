@@ -127,7 +127,7 @@ export default function Hero() {
     } else if (tier === 500) {
       const FRAMES = 75, FPS = 60;
       const imgs = Array.from({ length: FRAMES }, (_, i) => {
-        const img = new Image(); img.src = "/boot/eyes-" + i + ".png"; return img;
+        const img = new Image(); img.src = "/boot-gifneo/eyes-" + i + ".png"; return img;
       });
       let frame = 0, dir = 1, last = 0;
       const interval = 1000 / FPS;
@@ -260,7 +260,7 @@ export default function Hero() {
                   transform: "translateX(-100%)",
                   fontFamily: "monospace",
                   fontSize: `clamp(10px, ${cp.scrHeight * 0.052}px, 24px)`,
-                  color: "#00ffcc",
+                  color: "var(--color-accent)",
                   letterSpacing: "0.1em",
                 }}>
                   #{String(founderNumber).padStart(4, "0")}

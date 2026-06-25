@@ -1,11 +1,13 @@
 "use client";
 
 import { useLanguage } from "../context/LanguageContext";
+import { useUser } from "@/lib/supabase/useUser";
 import MatrixText from "./MatrixText";
 import PCBBackground from "./PCBBackground";
 
 export default function L3StoreSection() {
   const { t } = useLanguage();
+  const { tier } = useUser();
 
   return (
     <section style={{
@@ -20,7 +22,7 @@ export default function L3StoreSection() {
     }}>
       <PCBBackground />
       <img
-        src="/L3STOR3.png"
+        src={tier === 500 ? "/L3STOR3_hiveneo.png" : "/L3STOR3.png"}
         alt="L3STORE"
         style={{
           width: "60%",
