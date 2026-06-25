@@ -6,5 +6,94 @@
   },
   "l3store": {
     "comingSoon": "Muy pronto"
+  },
+  "footer": {
+    "tabs": {
+      "signal": "SIGNAL",
+      "founders": "FOUNDERS"
+    },
+    "topbar": {
+      "system": "SISTEMA",
+      "online": "ONLINE"
+    },
+    "terminal": {
+      "title": "TERMINAL",
+      "welcome": [
+        "L3TRONIX TERMINAL v0.1.0",
+        "Sistema operativo listo.",
+        "Escribe 'help' para ver comandos.",
+        ""
+      ],
+      "placeholder": "INSERTA AQUÍ TU CÓDIGO",
+      "commands": {
+        "help": [
+          "COMANDOS:",
+          "  help     - Ayuda",
+          "  status   - Estado del sistema",
+          "  version  - Versión",
+          "  backers  - Número de backers",
+          "  funded   - % financiado",
+          "  uptime   - Tiempo activo",
+          "  clear    - Limpiar pantalla",
+          "  whoami   - Info usuario",
+          "  unlock [código] - Acceso privado"
+        ],
+        "status": [
+          "SISTEMA: ONLINE",
+          "FASE: UI REFINEMENT",
+          "ESTADO: OPERATIVO"
+        ],
+        "version": [
+          "L3OS v0.1.0",
+          "Kernel: L3TRONIX 2024"
+        ],
+        "backers": [
+          "BACKERS: 142",
+          "OBJETIVO: 300",
+          "PROGRESO: 47%"
+        ],
+        "funded": [
+          "FINANCIADO: 47%",
+          "RECAUDADO: €47.000 / €100.000"
+        ],
+        "uptime": [
+          "UPTIME: 37 días 14 horas"
+        ],
+        "whoami": [
+          "USUARIO: l3tronix",
+          "ROL: FUNDADOR"
+        ],
+        "unknown": "COMANDO NO RECONOCIDO: '{cmd}'",
+        "unlockChecking": "Verificando código...",
+        "unlockGranted": "✓ ACCESO TIER {tier}€ CONCEDIDO",
+        "unlockedMsg": "Contenido privado desbloqueado.",
+        "unlockInvalid": "CÓDIGO INVÁLIDO"
+      }
+    },
+    "updates": {
+      "title": "ACTUALIZACIONES",
+      "empty": "— SIN ACTUALIZACIONES —"
+    },
+    "telemetry": {
+      "title": "TELEMETRÍA",
+      "labels": {
+        "backers": "BACKERS",
+        "funded": "FUNDADO",
+        "version": "VERSIÓN",
+        "uptime": "UPTIME"
+      }
+    },
+    "founders": {
+      "title": "FOUNDERS",
+      "empty": "— SIN FOUNDERS AÚN —"
+    },
+    "bottombar": {
+      "welcome": "BIENVENIDO",
+      "welcomeName": "BIENVENIDO, {name}"
+    },
+    "unlocked": {
+      "title": "CONTENIDO PRIVADO — TIER {tier}€",
+      "close": "CERRAR"
+    }
   }
 }

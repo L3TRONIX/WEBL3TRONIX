@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useUser } from "@/lib/supabase/useUser";
+import { useLanguage } from "../context/LanguageContext";
 
 // ── Hook responsive ────────────────────────────────────────────────────────
 function useIsMobile() {
@@ -24,6 +25,7 @@ const FONT_MONO = "'Courier New', monospace";
 
 // ── Componente TopBar ───────────────────────────────────────────────────────
 function TopBar({ activeTab, setActiveTab }: { activeTab: "signal" | "founders"; setActiveTab: (t: "signal" | "founders") => void }) {
+  const { t } = useLanguage();
   return (
     <div style={{
       display: "flex",
@@ -55,7 +57,7 @@ function TopBar({ activeTab, setActiveTab }: { activeTab: "signal" | "founders";
               transition: "color 0.2s, border-color 0.2s",
             }}
           >
-            ⎔ {tab.toUpperCase()}
+            ⎔ {t.footer.tabs[tab]}
           </button>
         ))}
       </div>
@@ -65,7 +67,7 @@ function TopBar({ activeTab, setActiveTab }: { activeTab: "signal" | "founders";
           color: COLOR_YELLOW,
           letterSpacing: "0.1em",
         }}>
-          SISTEMA
+          {t.footer.topbar.system}
         </span>
         <span style={{
           display: "inline-block",
@@ -81,7 +83,7 @@ function TopBar({ activeTab, setActiveTab }: { activeTab: "signal" | "founders";
           color: COLOR_GREEN,
           letterSpacing: "0.05em",
         }}>
-          ONLINE
+          {t.footer.topbar.online}
         </span>
       </div>
     </div>
@@ -94,9 +96,10 @@ function Terminal({ unlocked, setUnlocked }: {
   setUnlocked: (v: { tier: number; content: string } | null) => void;
   onHistoryUpdate?: (history: string[]) => void;
 }) {
+  const { t } = useLanguage();
   const [state, setState] = useState({
     command: "",
-    output: ["L3TRONIX TERMINAL v0.1.0", "Sistema operativo listo.", "Escribe 'help' para ver comandos.", ""],
+    output: [...t.footer.terminal.welcome],
     history: [] as string[],
     historyIndex: -1,
   });
@@ -110,27 +113,27 @@ function Terminal({ unlocked, setUnlocked }: {
 
       switch (trimmed) {
         case "help":
-          response = ["COMANDOS:", "  help     - Ayuda", "  status   - Estado del sistema", "  version  - Versión", "  backers  - Número de backers", "  funded   - % financiado", "  uptime   - Tiempo activo", "  clear    - Limpiar pantalla", "  whoami   - Info usuario", "  unlock [código] - Acceso privado"];
+          response = t.footer.terminal.commands.help;
           break;
         case "status":
-          response = ["SISTEMA: ONLINE", "FASE: UI REFINEMENT", "ESTADO: OPERATIVO"];
+          response = t.footer.terminal.commands.status;
           break;
         case "version":
-          response = ["L3OS v0.1.0", "Kernel: L3TRONIX 2024"];
+          response = t.footer.terminal.commands.version;
           break;
         case "backers":
-          response = ["BACKERS: 142", "OBJETIVO: 300", "PROGRESO: 47%"];
+          response = t.footer.terminal.commands.backers;
           break;
         case "funded":
-          response = ["FINANCIADO: 47%", "RECAUDADO: €47.000 / €100.000"];
+          response = t.footer.terminal.commands.funded;
           break;
         case "uptime":
-          response = ["UPTIME: 37 días 14 horas"];
+          response = t.footer.terminal.commands.uptime;
           break;
         case "clear":
           return { ...prev, output: [], command: "" };
         case "whoami":
-          response = ["USUARIO: l3tronix", "ROL: FUNDADOR"];
+          response = t.footer.terminal.commands.whoami;
           break;
         default:
           if (trimmed.startsWith("unlock ")) {
@@ -144,14 +147,14 @@ function Terminal({ unlocked, setUnlocked }: {
               .then(data => {
                 if (data.valid) {
                   setUnlocked({ tier: data.tier, content: data.content });
-                  setState(p => ({ ...p, output: [...p.output, "$ unlock ****", `✓ ACCESO TIER ${data.tier}€ CONCEDIDO`, "Contenido privado desbloqueado.", ""] }));
+                  setState(p => ({ ...p, output: [...p.output, "$ unlock ****", t.footer.terminal.commands.unlockGranted.replace("{tier}", String(data.tier)), t.footer.terminal.commands.unlockedMsg, ""] }));
                 } else {
-                  setState(p => ({ ...p, output: [...p.output, "$ unlock ****", data.message || "CÓDIGO INVÁLIDO", ""] }));
+                  setState(p => ({ ...p, output: [...p.output, "$ unlock ****", data.message || t.footer.terminal.commands.unlockInvalid, ""] }));
                 }
               });
-            return { ...prev, output: [...prev.output, "$ unlock ****", "Verificando código...", ""], history: [...prev.history, trimmed], historyIndex: -1, command: "" };
+            return { ...prev, output: [...prev.output, "$ unlock ****", t.footer.terminal.commands.unlockChecking, ""], history: [...prev.history, trimmed], historyIndex: -1, command: "" };
           }
-          response = [`COMANDO NO RECONOCIDO: '${trimmed}'`];
+          response = [t.footer.terminal.commands.unknown.replace("{cmd}", trimmed)];
           break;
       }
 
@@ -161,7 +164,7 @@ function Terminal({ unlocked, setUnlocked }: {
       if (newHistory.length > 10) newHistory.shift();
       return { ...prev, output: newOutput, history: newHistory, historyIndex: -1 };
     });
-  }, [setUnlocked]);
+  }, [setUnlocked, t]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -197,10 +200,10 @@ function Terminal({ unlocked, setUnlocked }: {
 
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, display: "flex", flexDirection: "column", minHeight: "clamp(240px, 25vw, 340px)" }}>
-      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "12px" }}>⎔ TERMINAL</div>
+      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "12px" }}>⎔ {t.footer.terminal.title}</div>
       <div style={{ flex: 1, overflowY: "auto", fontFamily: FONT_MONO, fontSize: "clamp(12px, 0.9vw, 15px)", lineHeight: "1.5", color: COLOR_GREEN }}>
         {state.output.map((line, i) => (
-          <div key={i} style={{ color: line.startsWith("$") ? COLOR_YELLOW : line.startsWith("COMANDO NO RECONOCIDO") ? "#cc2200" : COLOR_GREEN, opacity: line.startsWith("$") ? 0.9 : 0.8 }}>{line}</div>
+          <div key={i} style={{ color: line.startsWith("$") ? COLOR_YELLOW : line.startsWith(t.footer.terminal.commands.unknown.split(":")[0]) ? "#cc2200" : COLOR_GREEN, opacity: line.startsWith("$") ? 0.9 : 0.8 }}>{line}</div>
         ))}
         <span style={{ display: "inline-block", width: "8px", height: "1em", background: COLOR_GREEN, animation: "blink 1s step-end infinite", verticalAlign: "text-bottom" }} />
       </div>
@@ -211,7 +214,8 @@ function Terminal({ unlocked, setUnlocked }: {
 
 // ── Componente Updates ──────────────────────────────────────────────────────
 function Updates() {
-  const [updates, setUpdates] = useState<{ title: string; published_at: string; body: string }[]>([]);
+  const { t, locale } = useLanguage();
+  const [updates, setUpdates] = useState<{ title: string; published_at: string; body: string; title_en: string | null; body_en: string | null }[]>([]);
 
   useEffect(() => {
     const supabase = (async () => {
@@ -219,7 +223,7 @@ function Updates() {
       return createClient();
     })();
     supabase.then(client =>
-      client.from("updates").select("title, published_at, body").order("published_at", { ascending: false }).limit(5)
+      client.from("updates").select("title, published_at, body, title_en, body_en").order("published_at", { ascending: false }).limit(5)
     ).then(({ data }) => {
       if (data) setUpdates(data);
     });
@@ -227,19 +231,19 @@ function Updates() {
 
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, display: "flex", flexDirection: "column", minHeight: "clamp(240px, 25vw, 340px)" }}>
-      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "16px" }}>📡 ACTUALIZACIONES</div>
+      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "16px" }}>📡 {t.footer.updates.title}</div>
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "clamp(8px, 1vw, 12px)" }}>
         {updates.map((u, i) => (
           <div key={i} style={{ padding: "clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 14px)", borderLeft: "2px solid rgba(0,255,153,0.2)", background: "rgba(255,255,255,0.02)", borderRadius: "2px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-              <span style={{ fontSize: "clamp(12px, 0.9vw, 15px)", color: COLOR_GREEN, fontWeight: "600" }}>{u.title}</span>
+              <span style={{ fontSize: "clamp(12px, 0.9vw, 15px)", color: COLOR_GREEN, fontWeight: "600" }}>{locale === "en" && u.title_en ? u.title_en : u.title}</span>
               <span style={{ fontSize: "clamp(10px, 0.7vw, 13px)", color: COLOR_YELLOW }}>{u.published_at}</span>
             </div>
-            <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_YELLOW }}>{u.body}</div>
+            <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_YELLOW }}>{locale === "en" && u.body_en ? u.body_en : u.body}</div>
           </div>
         ))}
         {updates.length === 0 && (
-          <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO }}>— SIN ACTUALIZACIONES —</div>
+          <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO }}>{t.footer.updates.empty}</div>
         )}
       </div>
     </div>
@@ -248,15 +252,16 @@ function Updates() {
 
 // ── Componente Telemetría ───────────────────────────────────────────────────
 function Telemetry() {
+  const { t } = useLanguage();
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, minHeight: "clamp(240px, 25vw, 340px)" }}>
-      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "16px" }}>📡 TELEMETRÍA</div>
+      <div style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em", marginBottom: "16px" }}>📡 {t.footer.telemetry.title}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: "clamp(16px, 2vw, 28px)" }}>
         {[
-          { label: "BACKERS", value: "142", color: COLOR_YELLOW },
-          { label: "FUNDADO", value: "47%", color: COLOR_GREEN },
-          { label: "VERSIÓN", value: "v0.1.0", color: COLOR_YELLOW },
-          { label: "UPTIME", value: "37d 14h", color: COLOR_YELLOW },
+          { label: t.footer.telemetry.labels.backers, value: "142", color: COLOR_YELLOW },
+          { label: t.footer.telemetry.labels.funded, value: "47%", color: COLOR_GREEN },
+          { label: t.footer.telemetry.labels.version, value: "v0.1.0", color: COLOR_YELLOW },
+          { label: t.footer.telemetry.labels.uptime, value: "37d 14h", color: COLOR_YELLOW },
         ].map((item, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: "clamp(16px, 1.4vw, 22px)", color: COLOR_YELLOW }}>{item.label}</span>
@@ -270,6 +275,7 @@ function Telemetry() {
 
 // ── Componente FoundersPanel ───────────────────────────────────────────────
 function FoundersPanel() {
+  const { t } = useLanguage();
   return (
     <div style={{
       padding: "clamp(14px, 1.5vw, 20px)",
@@ -283,8 +289,8 @@ function FoundersPanel() {
       justifyContent: "center",
       gap: "16px",
     }}>
-      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em" }}>⎔ FOUNDERS</span>
-      <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>— SIN FOUNDERS AÚN —</span>
+      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "rgba(0,255,153,0.3)", letterSpacing: "0.15em" }}>⎔ {t.footer.founders.title}</span>
+      <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "rgba(0,255,153,0.2)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>{t.footer.founders.empty}</span>
     </div>
   );
 }
@@ -292,6 +298,7 @@ function FoundersPanel() {
 // ── Componente BottomBar ────────────────────────────────────────────────────
 function BottomBar({ inputCommand, setInputCommand, handleBottomKeyDown, profileName }: { inputCommand: string; setInputCommand: (v: string) => void; handleBottomKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void; profileName: string | null }) {
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
   return (
     <div style={{
       display: "grid",
@@ -305,12 +312,12 @@ function BottomBar({ inputCommand, setInputCommand, handleBottomKeyDown, profile
           value={inputCommand}
           onChange={e => setInputCommand(e.target.value)}
           onKeyDown={handleBottomKeyDown}
-          placeholder="INSERTA AQUÍ TU CÓDIGO"
+          placeholder={t.footer.terminal.placeholder}
           style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: COLOR_GREEN, fontSize: "clamp(13px, 1.0vw, 17px)", fontFamily: FONT_MONO }}
         />
       </div>
       <div style={{ border: BORDER, background: BG_PANEL, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_GREEN, letterSpacing: "0.1em" }}>{profileName ? `BIENVENIDO, ${profileName.toUpperCase()}` : "BIENVENIDO"}</span>
+        <span style={{ fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", color: COLOR_GREEN, letterSpacing: "0.1em" }}>{profileName ? t.footer.bottombar.welcomeName.replace("{name}", profileName.toUpperCase()) : t.footer.bottombar.welcome}</span>
       </div>
       <div style={{ padding: "clamp(10px, 1.2vw, 16px) clamp(14px, 2vw, 24px)", border: BORDER, background: BG_PANEL, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "clamp(6px, 0.8vw, 12px)" }}>
@@ -343,6 +350,7 @@ function Copyright() {
 
 // ── Footer principal ────────────────────────────────────────────────────────
 export default function Footer() {
+  const { t } = useLanguage();
   const [unlocked, setUnlocked] = useState<{ tier: number; content: string } | null>(null);
   const { profileName } = useUser();
   const isMobile = useIsMobile();
@@ -411,9 +419,9 @@ export default function Footer() {
 
         {unlocked ? (
           <div style={{ padding: "clamp(14px, 1.5vw, 24px)", border: "1px solid rgba(0,255,153,0.3)", background: "rgba(0,255,153,0.04)", borderRadius: "2px" }}>
-            <div style={{ color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px", fontSize: "clamp(12px, 0.9vw, 15px)" }}>⎔ CONTENIDO PRIVADO — TIER {unlocked.tier}€</div>
+            <div style={{ color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px", fontSize: "clamp(12px, 0.9vw, 15px)" }}>⎔ {t.footer.unlocked.title.replace("{tier}", String(unlocked.tier))}</div>
             <div style={{ color: COLOR_GREEN, whiteSpace: "pre-wrap", lineHeight: "1.7", fontSize: "clamp(13px, 1.0vw, 16px)" }}>{unlocked.content}</div>
-            <button onClick={() => setUnlocked(null)} style={{ marginTop: "20px", background: "transparent", border: "1px solid rgba(0,255,153,0.2)", color: "rgba(0,255,153,0.4)", fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", padding: "6px 14px", cursor: "pointer", letterSpacing: "0.1em" }}>CERRAR</button>
+            <button onClick={() => setUnlocked(null)} style={{ marginTop: "20px", background: "transparent", border: "1px solid rgba(0,255,153,0.2)", color: "rgba(0,255,153,0.4)", fontFamily: FONT_MONO, fontSize: "clamp(11px, 0.8vw, 14px)", padding: "6px 14px", cursor: "pointer", letterSpacing: "0.1em" }}>{t.footer.unlocked.close}</button>
           </div>
         ) : activeTab === "founders" ? (
           <FoundersPanel />
