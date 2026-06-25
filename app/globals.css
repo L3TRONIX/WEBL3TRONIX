@@ -66,9 +66,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   left: 50%;
   transform: translateX(-50%);
   color: #ffcc00;
-  font-size: 1.5rem;
+  font-size: clamp(14px, 4vw, 24px);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0;
   font-family: 'L3OS', sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 90vw;
 }

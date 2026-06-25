@@ -83,12 +83,13 @@ export default function Hero() {
       langTop:    iy + ih * SCR.t,
       countRight: vw - (ix + iw * (SCR.l + SCR.w)),
       countTop:   iy + ih * SCR.t,
-      ctaTop:     iy + ih * (SCR.t + SCR.h * 0.45),
+      ctaTop:     iy + ih * (SCR.t + SCR.h * 0.58),
       subTop:     iy + ih * (SCR.t + SCR.h * 0.83),
       scrLeft:    ix + iw * SCR.l,
       scrTop:     iy + ih * SCR.t,
       scrWidth:   iw * SCR.w,
       scrHeight:  ih * SCR.h,
+      ih:         ih,
     });
   };
 
@@ -140,7 +141,8 @@ export default function Hero() {
           transformOrigin: "50.15% 46.8%",
           willChange: "transform",
           isolation: "isolate",
-        }}
+          ["--ch" as any]: cp ? `${cp.ih}px` : "300px",
+        } as React.CSSProperties}
       >
         <img ref={imgRef} src="/l3tronix-glow.png" alt="L3TRONIX" className={styles.consoleSvg} />
 
@@ -178,15 +180,15 @@ export default function Hero() {
             style={{
               position: "absolute",
               left: cp.langLeft,
-              top: cp.langTop + 28,
+              top: cp.langTop + Math.max(cp.ih * 0.06, 22),
               opacity: uiOpacity,
               background: "transparent",
               border: "1px solid rgba(0,255,153,0.4)",
               color: "#00ff99",
               fontFamily: "monospace",
-              fontSize: "11px",
+              fontSize: Math.min(Math.max(cp.ih * 0.04, 9), 13),
               letterSpacing: "0.1em",
-              padding: "4px 10px",
+              padding: `${Math.min(Math.max(cp.ih * 0.014, 3), 6)}px ${Math.min(Math.max(cp.ih * 0.035, 8), 14)}px`,
               cursor: "pointer",
               zIndex: 20,
               maxWidth: "160px",

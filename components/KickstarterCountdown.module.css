@@ -2,15 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: clamp(2px, calc(var(--ch, 300px) * 0.012), 6px);
 }
 .label {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
+  font-size: clamp(7px, calc(var(--ch, 300px) * 0.022), 13px);
   font-weight: 700;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.12em;
   color: #ffcc00;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .counter {
   display: flex;
@@ -24,26 +25,26 @@
 }
 .val {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 20px;
+  font-size: clamp(9px, calc(var(--ch, 300px) * 0.032), 20px);
   font-weight: 700;
   color: #00ff99;
-  letter-spacing: 0.05em;
-  min-width: 26px;
+  letter-spacing: 0.02em;
+  min-width: clamp(11px, calc(var(--ch, 300px) * 0.042), 26px);
   text-align: center;
 }
 .tag {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
+  font-size: clamp(6px, calc(var(--ch, 300px) * 0.02), 13px);
   font-weight: 700;
   color: rgba(0,255,153,0.5);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 .sep {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 16px;
+  font-size: clamp(7px, calc(var(--ch, 300px) * 0.026), 16px);
   font-weight: 700;
   color: rgba(255,204,0,0.3);
-  margin: 0 1px;
+  margin: 0;
 }
 
 .label, .val, .tag, .sep {
