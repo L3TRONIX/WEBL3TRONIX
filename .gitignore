@@ -1,0 +1,12 @@
+node_modules/
+.next/
+*.bak*
+*.bk*
+*.FINAL*
+.env*
+.DS_Store
+public/*.mp4
+public/*.bk
+public/l3tronix_test.png
+public/l3tronix_v2.png
+.vercel

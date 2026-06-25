@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Bebas+Neue&family=Turret+Road:wght@700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+
+  background: #000;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --off-white: #e8e8e8;
+  --dim: rgba(255,255,255,0.45);
+  --dimmer: rgba(255,255,255,0.15);
+}
+
+@font-face {
+  font-family: 'L3TRONIX';
+  src: url('/fonts/L3TRONIX FONT.otf') format('opentype');
+}
+@font-face {
+  font-family: 'L3OS';
+  src: url('/fonts/L3OS FONT.otf') format('opentype');
+}
+@font-face {
+  font-family: 'L3SYNC';
+  src: url('/fonts/L3SYNC FONT.otf') format('opentype');
+}
+@font-face {
+  font-family: 'CyberAlert';
+  src: url('/fonts/Cyber Alert copia.otf') format('opentype');
+}
+
+@keyframes crtFlash {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes logoPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* L3Store Coming Soon */
+.l3store-coming {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffcc00;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+  font-family: 'L3OS', sans-serif;
+}

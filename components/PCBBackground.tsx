@@ -1,0 +1,92 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+export default function PCBBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+
+    const GRID = 40;
+    const COLOR_GREEN = "rgba(0,255,153,0.3)";
+    const COLOR_GOLD  = "rgba(255,204,0,0.12)";
+    const NODE_COLOR  = "rgba(0,255,153,0.3)";
+
+    type Line = { x1:number; y1:number; x2:number; y2:number; color:string; pulse:number; speed:number };
+    type Node = { x:number; y:number; r:number; pulse:number; speed:number };
+
+    const lines: Line[] = [];
+    const nodes: Node[] = [];
+
+    for (let x = 0; x < w; x += GRID) {
+      for (let y = 0; y < h; y += GRID) {
+        if (Math.random() > 0.5) {
+          const horiz = Math.random() > 0.5;
+          lines.push({
+            x1: x, y1: y,
+            x2: horiz ? x + GRID : x,
+            y2: horiz ? y : y + GRID,
+            color: Math.random() > 0.5 ? COLOR_GREEN : COLOR_GOLD,
+            pulse: Math.random() * Math.PI * 2,
+            speed: 0.008 + Math.random() * 0.012,
+          });
+        }
+        if (Math.random() > 0.85) {
+          nodes.push({ x, y, r: 2, pulse: Math.random() * Math.PI * 2, speed: 0.01 + Math.random() * 0.02 });
+        }
+      }
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      for (const l of lines) {
+        l.pulse += l.speed;
+        const alpha = 0.3 + 0.7 * Math.abs(Math.sin(l.pulse));
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = l.color;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(l.x1, l.y1);
+        ctx.lineTo(l.x2, l.y2);
+        ctx.stroke();
+      }
+      for (const n of nodes) {
+        n.pulse += n.speed;
+        const alpha = 0.2 + 0.8 * Math.abs(Math.sin(n.pulse));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = NODE_COLOR;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    const onResize = () => {
+      w = window.innerWidth; h = window.innerHeight;
+      canvas.width = w; canvas.height = h;
+    };
+    window.addEventListener("resize", onResize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", onResize); };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position:"absolute", inset:0, zIndex:0, pointerEvents:"none" }}
+    />
+  );
+}
