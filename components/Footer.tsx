@@ -3,6 +3,18 @@
 import { useState, useCallback, useEffect } from "react";
 import { useUser } from "@/lib/supabase/useUser";
 
+// ── Hook responsive ────────────────────────────────────────────────────────
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ── Estilos base reutilizables ──────────────────────────────────────────────
 const BORDER = "1px solid rgba(0,255,153,0.1)";
 const BG_PANEL = "rgba(0,255,153,0.02)";
@@ -279,10 +291,11 @@ function FoundersPanel() {
 
 // ── Componente BottomBar ────────────────────────────────────────────────────
 function BottomBar({ inputCommand, setInputCommand, handleBottomKeyDown, profileName }: { inputCommand: string; setInputCommand: (v: string) => void; handleBottomKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void; profileName: string | null }) {
+  const isMobile = useIsMobile();
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
       gap: "clamp(10px, 1.5vw, 24px)",
     }}>
       <div style={{ padding: "clamp(10px, 1.2vw, 16px) clamp(14px, 2vw, 24px)", border: BORDER, background: BG_PANEL, display: "flex", alignItems: "center", gap: "8px" }}>
@@ -312,10 +325,11 @@ function BottomBar({ inputCommand, setInputCommand, handleBottomKeyDown, profile
 
 // ── Componente Copyright ────────────────────────────────────────────────────
 function Copyright() {
+  const isMobile = useIsMobile();
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
       gap: "clamp(10px, 1.5vw, 24px)",
     }}>
       <div />
@@ -331,6 +345,7 @@ function Copyright() {
 export default function Footer() {
   const [unlocked, setUnlocked] = useState<{ tier: number; content: string } | null>(null);
   const { profileName } = useUser();
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<"signal" | "founders">("signal");
   const [inputCommand, setInputCommand] = useState("");
   const [terminalState, setTerminalState] = useState<{ history: string[]; historyIndex: number }>({ history: [], historyIndex: -1 });
@@ -403,7 +418,7 @@ export default function Footer() {
         ) : activeTab === "founders" ? (
           <FoundersPanel />
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(10px, 1.5vw, 24px)", flex: "1" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "clamp(10px, 1.5vw, 24px)", flex: "1" }}>
             <Terminal unlocked={unlocked} setUnlocked={setUnlocked} onHistoryUpdate={(h) => setTerminalState(prev => ({ ...prev, history: h }))} />
             <Updates />
             <Telemetry />
