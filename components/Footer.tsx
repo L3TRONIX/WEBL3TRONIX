@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useUser } from "@/lib/supabase/useUser";
+import TierBadgeSpinner from "@/components/TierBadgeSpinner";
 import { useLanguage } from "../context/LanguageContext";
 
 // ── Hook responsive ────────────────────────────────────────────────────────
@@ -335,25 +336,49 @@ function FoundersPanel() {
         </div>
       )}
       {founders.length > 0 && (
-        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexFlow: "row wrap", gap: "10px", alignContent: "flex-start" }}>
           {founders.map((f, i) => {
-            const isSpecial = f.tier === 200 || f.tier === 500;
+            const isSpecial = f.tier === 80 || f.tier === 200 || f.tier === 500;
+            const isGifneo = f.tier === 500;
+            const accent = isGifneo ? "#ff0066" : f.tier === 200 ? "#ffcc00" : f.tier === 80 ? "#00ff99" : "rgba(0,255,153,0.3)";
+            const textColor = isGifneo ? "#00ffee" : f.tier === 80 ? "#ffcc00" : "#00ff99";
             return (
-              <div key={i} style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "8px 12px",
-                borderLeft: isSpecial ? "2px solid var(--color-accent)" : "2px solid var(--color-primary-dim)",
-                background: isSpecial ? "rgba(255,204,0,0.04)" : "rgba(255,255,255,0.02)",
-                borderRadius: "2px",
-              }}>
-                <span style={{ fontSize: "clamp(13px, 1.0vw, 16px)", color: isSpecial ? COLOR_YELLOW : COLOR_GREEN, fontWeight: isSpecial ? 700 : 400 }}>
-                  {f.name || "ANONYMOUS"}
-                </span>
-                <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: isSpecial ? COLOR_YELLOW : "var(--color-primary-dim)", fontFamily: FONT_MONO }}>
-                  #{String(f.founder_number).padStart(4, "0")}
-                </span>
+              <div key={i} style={{ position: "relative", height: "56px", width: "160px", flexShrink: 0 }}>
+                {/* glow exterior */}
+                <div style={{ position: "absolute", inset: "-3px", border: `1px solid ${accent}`, borderRadius: "5px", opacity: isSpecial ? 0.18 : 0.08 }} />
+                {/* fondo base */}
+                <div style={{ position: "absolute", inset: 0, background: isSpecial ? "rgba(255,204,0,0.03)" : "rgba(255,255,255,0.015)", borderRadius: "4px" }} />
+                {/* borde exterior */}
+                <div style={{ position: "absolute", inset: 0, border: `1px solid ${accent}`, borderRadius: "4px", opacity: isSpecial ? 1 : 0.4 }} />
+                {/* borde interior doble */}
+                <div style={{ position: "absolute", inset: "4px", border: `1px solid ${accent}`, borderRadius: "2px", opacity: isSpecial ? 0.4 : 0.15 }} />
+                {/* esquinas iluminadas */}
+                {["top-left", "top-right", "bottom-left", "bottom-right"].map((corner) => {
+                  const [v, h] = corner.split("-");
+                  return (
+                    <div key={corner}>
+                      <div style={{ position: "absolute", width: "10px", height: "2px", [v]: 0, [h]: 0, background: accent, opacity: isSpecial ? 1 : 0.35 }} />
+                      <div style={{ position: "absolute", width: "2px", height: "10px", [v]: 0, [h]: 0, background: accent, opacity: isSpecial ? 1 : 0.35 }} />
+                    </div>
+                  );
+                })}
+                {/* contenido: icono (hueco) | nombre | numero */}
+                <div style={{ position: "relative", height: "100%", display: "flex", alignItems: "center", padding: "0 14px" }}>
+                  <div style={{ position: "relative", width: "38px", height: "38px", flexShrink: 0 }}>
+                    <div style={{ position: "absolute", inset: 0, border: `1px solid ${accent}`, borderRadius: "3px", opacity: isSpecial ? 0.5 : 0.25 }} />
+                    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                      <div style={{ transform: f.tier === 200 ? "scale(1.6) translateY(8%)" : f.tier === 80 ? "scale(1.8) translate(6%, 8%)" : "none" }}>
+                        <TierBadgeSpinner tier={f.tier} size={32} />
+                      </div>
+                    </div>
+                  </div>
+                  <span style={{ flex: 1, textAlign: "center", fontSize: "clamp(13px, 1.0vw, 16px)", color: textColor, fontWeight: isSpecial ? 700 : 400 }}>
+                    {f.name || "ANONYMOUS"}
+                  </span>
+                  <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: textColor, fontFamily: FONT_MONO, flexShrink: 0 }}>
+                    #{String(f.founder_number).padStart(4, "0")}
+                  </span>
+                </div>
               </div>
             );
           })}
