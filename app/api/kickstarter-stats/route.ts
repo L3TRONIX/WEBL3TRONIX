@@ -20,14 +20,17 @@ export async function GET(req: NextRequest) {
     const html = await res.text();
 
     const backersMatch = html.match(/"project_backers_count":(\d+)/);
-    const percentMatch = html.match(/"project_percent_raised":(\d+)/);
+    const pledgedMatch = html.match(/&quot;pledged&quot;:([\d.]+)/);
+    const goalMatch = html.match(/&quot;goal&quot;:([\d.]+)/);
 
-    if (!backersMatch || !percentMatch) {
+    if (!backersMatch || !pledgedMatch || !goalMatch) {
       return NextResponse.json({ error: "no se encontraron los datos en el HTML" }, { status: 502 });
     }
 
     const backers = parseInt(backersMatch[1], 10);
-    const funded_percent = parseInt(percentMatch[1], 10);
+    const pledged = parseFloat(pledgedMatch[1]);
+    const goal = parseFloat(goalMatch[1]);
+    const funded_percent = goal > 0 ? Math.round((pledged / goal) * 1000000) / 10000 : 0;
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
