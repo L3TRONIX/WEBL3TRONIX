@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import styles from "./KickstarterCountdown.module.css";
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ@#$%&";
-const TARGET = new Date("2026-07-01T00:00:00");
+const TARGET = new Date("2026-07-31T15:48:58");
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
 function rndChar() { return CHARS[Math.floor(Math.random() * CHARS.length)]; }
@@ -57,25 +57,23 @@ function useMatrixDigit(real: string, chaos: boolean) {
 }
 
 export default function KickstarterCountdown() {
-  const [time, setTime] = useState({ d: "30", h: "00", m: "00", s: "00" });
+  const [time, setTime] = useState({ d: "00", h: "00", m: "00", s: "00" });
   const [chaos, setChaos] = useState(false);
 
-  // PENDIENTE DE ACTIVAR EL DIA DEL LANZAMIENTO REAL:
-  // useEffect(() => {
-  //   const tick = () => {
-  //     const diff = Math.max(TARGET.getTime() - Date.now(), 0);
-  //     setTime({
-  //       d: pad(Math.floor(diff / 86400000)),
-  //       h: pad(Math.floor((diff % 86400000) / 3600000)),
-  //       m: pad(Math.floor((diff % 3600000) / 60000)),
-  //       s: pad(Math.floor((diff % 60000) / 1000)),
-  //     });
-  //   };
-  //   tick();
-  //   const id = setInterval(tick, 1000);
-  //   return () => clearInterval(id);
-  // }, []);
-
+  useEffect(() => {
+    const tick = () => {
+      const diff = Math.max(TARGET.getTime() - Date.now(), 0);
+      setTime({
+        d: pad(Math.floor(diff / 86400000)),
+        h: pad(Math.floor((diff % 86400000) / 3600000)),
+        m: pad(Math.floor((diff % 3600000) / 60000)),
+        s: pad(Math.floor((diff % 60000) / 1000)),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
   useEffect(() => {
     const id = setInterval(() => {
       setChaos(true);

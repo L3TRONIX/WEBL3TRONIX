@@ -261,9 +261,30 @@ function Updates() {
 }
 
 // ── Componente Telemetría ───────────────────────────────────────────────────
+const LAUNCH_DATE = new Date("2026-07-01T15:48:58");
+
+function useUptime() {
+  const [uptime, setUptime] = useState("0d 0h 0m 0s");
+  useEffect(() => {
+    const tick = () => {
+      const diff = Math.max(Date.now() - LAUNCH_DATE.getTime(), 0);
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      setUptime(`${days}d ${hours}h ${mins}m ${secs}s`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return uptime;
+}
+
 function Telemetry() {
   const { t } = useLanguage();
   const [stats, setStats] = useState<{ backers: number; funded_percent: number } | null>(null);
+  const uptime = useUptime();
 
   useEffect(() => {
     const supabase = (async () => {
@@ -285,7 +306,7 @@ function Telemetry() {
           { label: t.footer.telemetry.labels.backers, value: stats ? String(stats.backers) : "142", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.funded, value: stats ? `${stats.funded_percent}%` : "47%", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.version, value: "v0.1.0", color: COLOR_GREEN },
-          { label: t.footer.telemetry.labels.uptime, value: "0d 0h", color: COLOR_GREEN },
+          { label: t.footer.telemetry.labels.uptime, value: uptime, color: COLOR_GREEN },
         ].map((item, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: "clamp(16px, 1.4vw, 22px)", color: item.color }}>{item.label}</span>
