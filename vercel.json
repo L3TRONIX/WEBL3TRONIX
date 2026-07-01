@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/kickstarter-stats",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

@@ -4,8 +4,11 @@ import { createClient } from "@supabase/supabase-js";
 const CAMPAIGN_URL = "https://www.kickstarter.com/projects/l3tronix/l3tronix-power-on-play";
 
 export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
   const secret = req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.KICKSTARTER_CRON_SECRET) {
+  const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  const isManualTest = secret === process.env.KICKSTARTER_CRON_SECRET;
+  if (!isVercelCron && !isManualTest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

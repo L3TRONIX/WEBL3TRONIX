@@ -262,13 +262,27 @@ function Updates() {
 // ── Componente Telemetría ───────────────────────────────────────────────────
 function Telemetry() {
   const { t } = useLanguage();
+  const [stats, setStats] = useState<{ backers: number; funded_percent: number } | null>(null);
+
+  useEffect(() => {
+    const supabase = (async () => {
+      const { createClient } = await import("@/lib/supabase/client");
+      return createClient();
+    })();
+    supabase.then(client =>
+      client.from("kickstarter_stats").select("backers, funded_percent").eq("id", 1).single()
+    ).then(({ data }) => {
+      if (data) setStats(data);
+    });
+  }, []);
+
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, minHeight: "clamp(240px, 25vw, 340px)" }}>
       <div style={{ fontSize: "clamp(22px, 1.6vw, 28px)", color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px" }}>📡 {t.footer.telemetry.title}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: "clamp(16px, 2vw, 28px)" }}>
         {[
-          { label: t.footer.telemetry.labels.backers, value: "142", color: COLOR_GREEN },
-          { label: t.footer.telemetry.labels.funded, value: "47%", color: COLOR_GREEN },
+          { label: t.footer.telemetry.labels.backers, value: stats ? String(stats.backers) : "142", color: COLOR_GREEN },
+          { label: t.footer.telemetry.labels.funded, value: stats ? `${stats.funded_percent}%` : "47%", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.version, value: "v0.1.0", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.uptime, value: "0d 0h", color: COLOR_GREEN },
         ].map((item, i) => (
