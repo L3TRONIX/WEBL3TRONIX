@@ -297,8 +297,26 @@ function Telemetry() {
 }
 
 // ── Componente FoundersPanel ───────────────────────────────────────────────
+type FounderRow = { name: string | null; founder_number: number; tier: number };
+
 function FoundersPanel() {
   const { t } = useLanguage();
+  const [founders, setFounders] = useState<FounderRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = (async () => {
+      const { createClient } = await import("@/lib/supabase/client");
+      return createClient();
+    })();
+    supabase.then(client =>
+      client.from("founders_public").select("name, founder_number, tier").order("founder_number", { ascending: true })
+    ).then(({ data }) => {
+      setFounders(data || []);
+      setLoading(false);
+    });
+  }, []);
+
   return (
     <div style={{
       padding: "clamp(14px, 1.5vw, 20px)",
@@ -308,12 +326,39 @@ function FoundersPanel() {
       minHeight: "clamp(240px, 25vw, 340px)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
       gap: "16px",
     }}>
-      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "var(--color-primary-dim)", letterSpacing: "0.15em" }}>⎔ {t.footer.founders.title}</span>
-      <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "var(--color-primary-dimmer)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>{t.footer.founders.empty}</span>
+      <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: "var(--color-primary-dim)", letterSpacing: "0.15em", textAlign: "center" }}>⎔ {t.footer.founders.title}</span>
+      {!loading && founders.length === 0 && (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: "clamp(12px, 1.0vw, 16px)", color: "var(--color-primary-dimmer)", fontFamily: FONT_MONO, letterSpacing: "0.1em" }}>{t.footer.founders.empty}</span>
+        </div>
+      )}
+      {founders.length > 0 && (
+        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+          {founders.map((f, i) => {
+            const isSpecial = f.tier === 200 || f.tier === 500;
+            return (
+              <div key={i} style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "8px 12px",
+                borderLeft: isSpecial ? "2px solid var(--color-accent)" : "2px solid var(--color-primary-dim)",
+                background: isSpecial ? "rgba(255,204,0,0.04)" : "rgba(255,255,255,0.02)",
+                borderRadius: "2px",
+              }}>
+                <span style={{ fontSize: "clamp(13px, 1.0vw, 16px)", color: isSpecial ? COLOR_YELLOW : COLOR_GREEN, fontWeight: isSpecial ? 700 : 400 }}>
+                  {f.name || "ANONYMOUS"}
+                </span>
+                <span style={{ fontSize: "clamp(11px, 0.8vw, 14px)", color: isSpecial ? COLOR_YELLOW : "var(--color-primary-dim)", fontFamily: FONT_MONO }}>
+                  #{String(f.founder_number).padStart(4, "0")}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
