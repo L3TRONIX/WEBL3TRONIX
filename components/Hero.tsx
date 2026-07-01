@@ -13,7 +13,7 @@ import { useUser } from "../lib/supabase/useUser";
 import { createClient } from "../lib/supabase/client";
 
 const LOCALES: Locale[] = ["en", "es"];
-const KICKSTARTER_URL = "https://www.kickstarter.com";
+const KICKSTARTER_URL = "https://www.kickstarter.com/projects/l3tronix/l3tronix-power-on-play?ref=enbvho";
 
 const SCR = { l: 0.271, t: 0.287, w: 0.461, h: 0.374 };
 
@@ -28,41 +28,8 @@ export default function Hero() {
   const badgeCanvas = useRef<HTMLCanvasElement>(null);
   const badgeRaf = useRef<number>(0);
   const [cp, setCp] = useState<Record<string, number> | null>(null);
-  const [splashDone, setSplashDone] = useState(false);
-  const [splashVisible, setSplashVisible] = useState(true);
-  const audioUnlocked = useRef(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user, profileName, tier, founderNumber } = useUser();
-
-  useEffect(() => {
-    if (!splashDone) {
-      document.body.style.overflow = "hidden";
-      const block = (e: Event) => e.preventDefault();
-      window.addEventListener("wheel", block, { passive: false });
-      window.addEventListener("touchmove", block, { passive: false });
-      return () => {
-        document.body.style.overflow = "";
-        window.removeEventListener("wheel", block);
-        window.removeEventListener("touchmove", block);
-      };
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [splashDone]);
-
-  const handleSplash = () => {
-    if (audioUnlocked.current) return;
-    audioUnlocked.current = true;
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const buf = ctx.createBuffer(1, 1, 22050);
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(ctx.destination);
-    src.start(0);
-    ctx.resume();
-    setSplashVisible(false);
-    setTimeout(() => setSplashDone(true), 600);
-  };
 
   useEffect(() => {
     const handleProgress = (e: Event) => setProgress((e as CustomEvent).detail);
@@ -158,7 +125,7 @@ export default function Hero() {
     : 1 - Math.pow(-2 * safeProgress + 2, 2) / 2;
 
   const scale = 1 + ease * 1.67;
-  const uiOpacity = !splashDone ? 0 : Math.max(1 - safeProgress * 2, 0);
+  const uiOpacity = Math.max(1 - safeProgress * 2, 0);
   const cutOpacity = ease > 0.85 ? (ease - 0.85) / 0.15 : 0;
   const subOpacity = Math.max(1 - cutOpacity, 0);
 
@@ -285,30 +252,6 @@ export default function Hero() {
         </>}
       </div>
 
-      {/* Splash overlay */}
-      {!splashDone && cp && (
-        <>
-          <div
-            className={`${styles.splashOverlay} ${!splashVisible ? styles.splashOverlayHidden : ""}`}
-            onClick={(e) => { e.stopPropagation(); handleSplash(); }}
-            aria-hidden="true"
-          />
-          <div
-            className={`${styles.splash} ${!splashVisible ? styles.splashHidden : ""}`}
-            style={{
-              left: cp.scrLeft,
-              top: cp.scrTop,
-              width: cp.scrWidth,
-              height: cp.scrHeight,
-            }}
-            onClick={(e) => { e.stopPropagation(); handleSplash(); }}
-          >
-            <div className={styles.powerBtn}>⏻</div>
-            <span className={styles.pressStart}>PRESS START</span>
-          </div>
-        </>
-      )}
-
       {cp && (
         <div style={{ position:"fixed", left:0, right:0, top:cp.subTop, zIndex:20, opacity:subOpacity, textAlign:"center", pointerEvents:"none", transform:`scale(${1 + ease * 0.8})`, transformOrigin:"center center" }}>
           <MatrixText tag="p" className={styles.sub} text={t.hero.sub} chaosInterval={10000} />
@@ -354,6 +297,20 @@ export default function Hero() {
           zIndex: 100,
         }}>
         <KickstarterCountdown />
+      </div>
+      <div style={{
+          position: "fixed",
+          top: "clamp(10px, 2vh, 20px)",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 100,
+        }}>
+        <img
+          src="/kickstarter-logo-green.png"
+          alt="Kickstarter"
+          className={styles.kickstarterLogo}
+          style={{ height: "clamp(20px, 3vh, 32px)", width: "auto" }}
+        />
       </div>
       <div style={{
           position: "fixed",

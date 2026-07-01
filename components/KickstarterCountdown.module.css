@@ -25,11 +25,11 @@
 }
 .val {
   font-family: 'Rajdhani', sans-serif;
-  font-size: clamp(14px, 1.6vw, 26px);
+  font-size: clamp(28px, 3.2vw, 52px);
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: 0.02em;
-  min-width: clamp(16px, 1.8vw, 30px);
+  min-width: clamp(32px, 3.6vw, 60px);
   text-align: center;
 }
 .tag {

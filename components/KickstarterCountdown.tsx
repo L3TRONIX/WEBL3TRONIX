@@ -57,23 +57,24 @@ function useMatrixDigit(real: string, chaos: boolean) {
 }
 
 export default function KickstarterCountdown() {
-  const [time, setTime] = useState({ d: "00", h: "00", m: "00", s: "00" });
+  const [time, setTime] = useState({ d: "30", h: "00", m: "00", s: "00" });
   const [chaos, setChaos] = useState(false);
 
-  useEffect(() => {
-    const tick = () => {
-      const diff = Math.max(TARGET.getTime() - Date.now(), 0);
-      setTime({
-        d: pad(Math.floor(diff / 86400000)),
-        h: pad(Math.floor((diff % 86400000) / 3600000)),
-        m: pad(Math.floor((diff % 3600000) / 60000)),
-        s: pad(Math.floor((diff % 60000) / 1000)),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
+  // PENDIENTE DE ACTIVAR EL DIA DEL LANZAMIENTO REAL:
+  // useEffect(() => {
+  //   const tick = () => {
+  //     const diff = Math.max(TARGET.getTime() - Date.now(), 0);
+  //     setTime({
+  //       d: pad(Math.floor(diff / 86400000)),
+  //       h: pad(Math.floor((diff % 86400000) / 3600000)),
+  //       m: pad(Math.floor((diff % 3600000) / 60000)),
+  //       s: pad(Math.floor((diff % 60000) / 1000)),
+  //     });
+  //   };
+  //   tick();
+  //   const id = setInterval(tick, 1000);
+  //   return () => clearInterval(id);
+  // }, []);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -90,7 +91,6 @@ export default function KickstarterCountdown() {
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.label}>KICKSTARTER</div>
       <div className={styles.counter}>
         <span className={styles.unit}><span className={styles.val}>{days}</span><span className={styles.tag}>D</span></span>
         <span className={styles.sep}>:</span>

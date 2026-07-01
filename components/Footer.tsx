@@ -232,7 +232,7 @@ function Updates() {
 
   return (
     <div style={{ padding: "clamp(14px, 1.5vw, 20px)", background: BG_PANEL, display: "flex", flexDirection: "column", minHeight: "clamp(240px, 25vw, 340px)" }}>
-      <div style={{ fontSize: "clamp(22px, 1.6vw, 28px)", color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px" }}>📡 {t.footer.updates.title}</div>
+      <div style={{ fontSize: "clamp(22px, 1.6vw, 28px)", color: COLOR_YELLOW, letterSpacing: "0.15em", marginBottom: "16px" }}>{t.footer.updates.title}</div>
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "clamp(8px, 1vw, 12px)" }}>
         {selected === null ? (
           <>
@@ -270,7 +270,7 @@ function Telemetry() {
           { label: t.footer.telemetry.labels.backers, value: "142", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.funded, value: "47%", color: COLOR_GREEN },
           { label: t.footer.telemetry.labels.version, value: "v0.1.0", color: COLOR_GREEN },
-          { label: t.footer.telemetry.labels.uptime, value: "37d 14h", color: COLOR_GREEN },
+          { label: t.footer.telemetry.labels.uptime, value: "0d 0h", color: COLOR_GREEN },
         ].map((item, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: "clamp(16px, 1.4vw, 22px)", color: item.color }}>{item.label}</span>
