@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const CAMPAIGN_URL = "https://www.kickstarter.com/projects/l3tronix/l3tronix-power-on-play";
+const CAMPAIGN_URL = "https://www.kickstarter.com/projects/l3tronix/l3tronix-power-on-play/widget/card.html";
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
     });
     const html = await res.text();
 
-    const backersMatch = html.match(/"backers_count":(\d+)/);
-    const percentMatch = html.match(/"percent_funded":(\d+)/);
+    const backersMatch = html.match(/"project_backers_count":(\d+)/);
+    const percentMatch = html.match(/"project_percent_raised":(\d+)/);
 
     if (!backersMatch || !percentMatch) {
       return NextResponse.json({ error: "no se encontraron los datos en el HTML" }, { status: 502 });
